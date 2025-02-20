@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       headers: headers,
       timeout: 10000,
       validateStatus: function (status: number) {
-        return status >= 200 && status < 300; // default
+        return status >= 200 && status < 300;
       },
       maxRedirects: 5,
     });

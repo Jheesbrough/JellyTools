@@ -11,11 +11,10 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Supports using the Jellyfin and Jellyseer API to manage media libraries and run common tasks.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Important quirks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Jellyseer does not allow client->server communication, so the requests are proxied through the Next.js route `/api/proxy`.
 
-Jellyseer does not allow client->server communication, so the requests are proxied through the Next.js server.
+- Jellyfin uses its API token in the authentication header as`Mediabrowser Token="token"` header, while Jellyseer uses the header X-Api-Key.
