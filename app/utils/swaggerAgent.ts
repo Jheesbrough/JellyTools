@@ -37,29 +37,23 @@ export default class SwaggerAgent {
   }
 
   async makeRequest(path: string, query: Record<string, string> = {}) {
-    const url = new URL(`${this.baseURL}/${path}`);
-    Object.keys(query).forEach(key => url.searchParams.append(key, query[key]));
-
     try {
-      const headers = {
-        "Content-Type": "application/json",
-        [this.headerType]: this.apiKey,
-      };
-      console.log("Headers:", headers);
-
-      const response = await axios({
-        method: 'get',
-        url: url.toString(),
-        headers: headers,
-        timeout: 10000,
-        validateStatus: function (status: number) {
-          return status >= 200 && status < 300; // default
+      const response = await fetch('/api/proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        maxRedirects: 5,
+        body: JSON.stringify({
+          baseURL: this.baseURL,
+          path: path,
+          query: query,
+          apiKey: this.apiKey,
+          headerType: this.headerType,
+        }),
       });
 
-      if (response.status === 200) {
-        return response.data;
+      if (response.ok) {
+        return await response.json();
       }
     } catch (error) {
       console.log("Error making request:", error);

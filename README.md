@@ -17,3 +17,5 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+Jellyseer does not allow client->server communication, so the requests are proxied through the Next.js server.
