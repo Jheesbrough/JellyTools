@@ -1,4 +1,6 @@
 "use client";
+const axios = require('axios');
+
 export default class SwaggerAgent {
   protected apiKey: string;
   protected baseURL: string;
@@ -16,7 +18,9 @@ export default class SwaggerAgent {
     this.setup();
 
     console.log("SwaggerAgent created with:", this.baseURL, this.apiKey);
-    this.validate();
+    if (this.apiKey && this.baseURL && this.baseURL.length > 0 && this.apiKey.length > 0) {
+      this.validate();
+    }
   }
 
   // This is a hook for subclasses to do any setup they need
@@ -37,24 +41,30 @@ export default class SwaggerAgent {
     Object.keys(query).forEach(key => url.searchParams.append(key, query[key]));
 
     try {
-      let headers = new Headers();
-      headers.append("Content-Type", "application/json");
-      headers.append(this.headerType, this.apiKey);
+      const headers = {
+        "Content-Type": "application/json",
+        [this.headerType]: this.apiKey,
+      };
       console.log("Headers:", headers);
 
-      const response = await fetch(url.toString(), {
+      const response = await axios({
+        method: 'get',
+        url: url.toString(),
         headers: headers,
-        method: "GET",
+        timeout: 10000,
+        validateStatus: function (status: number) {
+          return status >= 200 && status < 300; // default
+        },
+        maxRedirects: 5,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.status === 200) {
+        return response.data;
       }
-
-      return await response.json();
     } catch (error) {
-      throw new Error(`Error making the request: ${error}`);
+      console.log("Error making request:", error);
     }
+    return null;
   }
 
   async validate() {
