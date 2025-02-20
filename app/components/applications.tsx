@@ -87,6 +87,7 @@ const Applications = () => {
                             width: modalStyle.width,
                             height: modalStyle.height,
                             bgcolor: 'background.paper',
+                            position: 'absolute',
                         }}
                     >
                         <Typography variant="h4">{modalContent.title}</Typography>
