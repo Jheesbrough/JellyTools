@@ -1,28 +1,29 @@
 "use client";
 import React, { useState, useRef } from 'react';
-import { Paper, Modal, Box, Typography, Fade } from '@mui/material';
+import { Paper, Modal, Typography, Fade } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import MovieLeaderboard from "./applications/movieLeaderboard";
-import Backdrop from '@mui/material';
+
+interface ModalStyle {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
 
 const Applications = () => {
   const [open, setOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', description: '' });
-  const [modalStyle, setModalStyle] = useState<{ top: number; left: number; width: number; height: number; }>({
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-  });
+  const [modalStyle, setModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
   const paperRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const animateModalSize = (startStyle: { top: any; left: any; width: any; height: any; }, endStyle: { top: any; left: any; width: any; height: any; }, duration: number) => {
+  const animateModalSize = (startStyle: ModalStyle, endStyle: ModalStyle, duration: number) => {
     const startTime = performance.now();
     const animate = (currentTime: number) => {
       const elapsedTime = currentTime - startTime;
       const progress = Math.min(elapsedTime / duration, 1);
 
-      const newStyle = {
+      const newStyle: ModalStyle = {
         top: startStyle.top + (endStyle.top - startStyle.top) * progress,
         left: startStyle.left + (endStyle.left - startStyle.left) * progress,
         width: startStyle.width + (endStyle.width - startStyle.width) * progress,
@@ -43,13 +44,13 @@ const Applications = () => {
     const paperElement = paperRefs.current[index];
     if (!paperElement) return;
     const rect = paperElement.getBoundingClientRect();
-    const startStyle = {
+    const startStyle: ModalStyle = {
       top: rect.top,
       left: rect.left,
       width: rect.width,
       height: rect.height,
     };
-    const endStyle = {
+    const endStyle: ModalStyle = {
       top: window.innerHeight * 0.1,
       left: window.innerWidth * 0.1,
       width: window.innerWidth * 0.8,
@@ -100,7 +101,7 @@ const Applications = () => {
               padding: 4,
             }}
           >
-            <Typography sx={{paddingBottom:'3'}}variant="h4" align="center">{modalContent.title}</Typography>
+            <Typography sx={{ paddingBottom: '3' }} variant="h4" align="center">{modalContent.title}</Typography>
             <Typography variant="body1">{modalContent.description}</Typography>
           </Paper>
         </Fade>

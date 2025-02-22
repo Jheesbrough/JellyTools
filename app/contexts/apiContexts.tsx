@@ -25,7 +25,7 @@ const JellyseerContext = createContext(jellyseerInstance);
 export const useJellyfin = () => useContext(JellyfinContext);
 export const useJellyseer = () => useContext(JellyseerContext);
 
-export const APIProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const APIProvider: React.FC<React.PropsWithChildren<Record<string, unknown>>> = ({ children }) => {
   return (
     <JellyfinContext.Provider value={jellyfinInstance}>
       <JellyseerContext.Provider value={jellyseerInstance}>

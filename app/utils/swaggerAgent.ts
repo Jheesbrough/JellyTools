@@ -1,5 +1,4 @@
 "use client";
-const axios = require('axios');
 
 export default class SwaggerAgent {
   protected apiKey: string;
