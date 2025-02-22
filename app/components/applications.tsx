@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Paper, Modal, Typography, Fade } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import MovieLeaderboard from "./applications/movieLeaderboard";
+import ModalApplicationPopup from './modalApplicationPopup';
 
 interface ModalStyle {
   top: number;
@@ -15,9 +16,10 @@ const Applications = () => {
   const [open, setOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', description: '' });
   const [modalStyle, setModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
+  const [initialModalStyle, setInitialModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
   const paperRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const animateModalSize = (startStyle: ModalStyle, endStyle: ModalStyle, duration: number) => {
+  const animateModalSize = (startStyle: ModalStyle, endStyle: ModalStyle, duration: number, callback?: () => void) => {
     const startTime = performance.now();
     const animate = (currentTime: number) => {
       const elapsedTime = currentTime - startTime;
@@ -34,6 +36,8 @@ const Applications = () => {
 
       if (progress < 1) {
         requestAnimationFrame(animate);
+      } else if (callback) {
+        callback();
       }
     };
 
@@ -58,11 +62,14 @@ const Applications = () => {
     };
 
     setModalContent({ title, description });
+    setInitialModalStyle(startStyle);
     setOpen(true);
     animateModalSize(startStyle, endStyle, 300);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    animateModalSize(modalStyle, initialModalStyle, 300, () => setOpen(false));
+  };
 
   const squares = Array.from({ length: 24 }, (_, index) => {
     const { title, description } = new MovieLeaderboard().getInfo();
@@ -101,8 +108,7 @@ const Applications = () => {
               padding: 4,
             }}
           >
-            <Typography sx={{ paddingBottom: '3' }} variant="h4" align="center">{modalContent.title}</Typography>
-            <Typography variant="body1">{modalContent.description}</Typography>
+            <ModalApplicationPopup modalContent={modalContent} />
           </Paper>
         </Fade>
       </Modal >
