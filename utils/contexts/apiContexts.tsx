@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext } from 'react';
-import Jellyfin from '../utils/jellyfin';
-import Jellyseer from '../utils/jellyseer';
+import Jellyfin from '@/utils/jellyfin';
+import Jellyseer from '@/utils/jellyseer';
 
 let jellyfinBaseURL = '';
 let jellyfinApiKey = '';

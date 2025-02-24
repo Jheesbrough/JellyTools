@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
 import { Typography, Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
 import humanFileSize from '@/utils/humanFileSize';
+import LeaderboardTable from '@/components/common/LeaderboardTable';
 
 const MovieFileSize: React.FC = () => {
   const [fileSizes, setFileSizes] = useState<{ name: string; size: number }[]>([]);
@@ -29,24 +30,10 @@ const MovieFileSize: React.FC = () => {
       <Button variant="contained" color="primary" onClick={handleButtonClick}>
         Get Movie File Sizes
       </Button>
-      <TableContainer component={Paper} style={{ maxHeight: '400px', overflowY: 'auto', marginTop: '16px', paddingBottom: '16px' }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>Movie Name</TableCell>
-              <TableCell>File Size</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {fileSizes.map(movie => (
-              <TableRow key={movie.name + movie.size}>
-                <TableCell>{movie.name}</TableCell>
-                <TableCell>{humanFileSize(movie.size)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <LeaderboardTable
+        items={fileSizes}
+        columns={['Movie Name', 'File Size']}
+      />
     </div>
   );
 };

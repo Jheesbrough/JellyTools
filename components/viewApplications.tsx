@@ -5,6 +5,8 @@ import Grid from "@mui/material/Grid2";
 import MovieLeaderboard from "@/components/applications/movieLeaderboard";
 import MovieFileSize from "@/components/applications/movieFileSize";
 import SeriesFileSize from "@/components/applications/seriesFileSize";
+import SeriesLeaderboard from "@/components/applications/seriesLeaderboard";
+import ClearUpSpace from './applications/clearUpSpace';
 
 interface ModalStyle {
   top: number;
@@ -75,7 +77,7 @@ const ViewApplications = () => {
   const applications = [
     {
       title: "Movie Leaderboard",
-      description: "A list of top-rated movies based on user ratings.",
+      description: "A list of top-rated movies based on how many times they have been viewed",
       content: <MovieLeaderboard />
     },
     {
@@ -87,6 +89,16 @@ const ViewApplications = () => {
       title: "Series File Size",
       description: "A list of series and their file sizes.",
       content: <SeriesFileSize />
+    },
+    {
+      title: "Series Leaderboard",
+      description: "A list of top-rated series based on how many times they have been viewed",
+      content: <SeriesLeaderboard />
+    },
+    {
+      title: "Clear Up Space",
+      description: "A tool to help you clear up space by deleting unneeded movies and series",
+      content: <ClearUpSpace />
     }
   ];
 
