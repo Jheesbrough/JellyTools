@@ -2,9 +2,9 @@
 import React, { useState, useRef } from 'react';
 import { Paper, Modal, Typography, Fade } from '@mui/material';
 import Grid from "@mui/material/Grid2";
-import MovieLeaderboard from "./applications/movieLeaderboard";
-import MovieFileSize from "./applications/movieFileSize";
-import SeriesFileSize from "./applications/seriesFileSize";
+import MovieLeaderboard from "@/components/applications/movieLeaderboard";
+import MovieFileSize from "@/components/applications/movieFileSize";
+import SeriesFileSize from "@/components/applications/seriesFileSize";
 
 interface ModalStyle {
   top: number;

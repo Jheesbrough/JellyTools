@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import { useJellyfin } from '../../contexts/apiContexts';
+import { useJellyfin } from '../../utils/contexts/apiContexts';
 import { Typography, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
 
 const MovieLeaderboard: React.FC = () => {

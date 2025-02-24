@@ -1,7 +1,7 @@
 import React from 'react';
-import Navbar from "./components/navbar/navbar";
-import { APIProvider } from './contexts/apiContexts';
-import ViewApplications from './components/viewApplications';
+import Navbar from "@/components/navbar/navbar";
+import { APIProvider } from '@/utils/contexts/apiContexts';
+import ViewApplications from '@/components/viewApplications';
 import { Container } from '@mui/material';
 
 export default function Home() {

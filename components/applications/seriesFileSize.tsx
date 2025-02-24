@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import { useJellyfin } from '../../contexts/apiContexts';
+import { useJellyfin } from '@/utils/contexts/apiContexts';
 import { Typography, Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
-import humanFileSize from '../../utils/humanFileSize';
+import humanFileSize from '@/utils/humanFileSize';
 
 const SeriesFileSize: React.FC = () => {
   const [fileSizes, setFileSizes] = useState<{ name: string; size: number }[]>([]);
