@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Paper, Modal, Typography, Fade } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import MovieLeaderboard from "./applications/movieLeaderboard";
-import fileSize from './applications/fileSize';
+import FileSize from './applications/fileSize';
 
 interface ModalStyle {
   top: number;
@@ -14,11 +14,7 @@ interface ModalStyle {
 
 const ViewApplications = () => {
   const [open, setOpen] = useState(false);
-  interface Application {
-    getContent: () => React.ReactNode;
-  }
-
-  const [modalApplication, setModalApplication] = useState<Application | null>(null);
+  const [modalContent, setModalContent] = useState<React.ReactNode | null>(null);
   const [modalStyle, setModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
   const [initialModalStyle, setInitialModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
   const paperRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -48,7 +44,7 @@ const ViewApplications = () => {
     requestAnimationFrame(animate);
   };
 
-  const handleOpen = (app: any, index: number) => {
+  const handleOpen = (content: React.ReactNode, index: number) => {
     const paperElement = paperRefs.current[index];
     if (!paperElement) return;
     const rect = paperElement.getBoundingClientRect();
@@ -65,7 +61,7 @@ const ViewApplications = () => {
       height: window.innerHeight * 0.8,
     };
 
-    setModalApplication(app);
+    setModalContent(content);
     setInitialModalStyle(startStyle);
     setOpen(true);
     animateModalSize(startStyle, endStyle, 300);
@@ -76,33 +72,37 @@ const ViewApplications = () => {
   };
 
   const applications = [
-    new MovieLeaderboard(),
-    new fileSize()
+    {
+      title: "Movie Leaderboard",
+      description: "A list of top-rated movies based on user ratings.",
+      content: <MovieLeaderboard />
+    },
+    {
+      title: "File Size",
+      description: "A list of movies and their file sizes.",
+      content: <FileSize />
+    }
   ];
-  const squares = applications.map((application, index) => {
-    const { title, description } = application.getBasicInfo();
-    return (
-      <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-        <Paper
-          ref={el => { paperRefs.current[index] = el; }}
-          style={{ height: 250, padding: 16, cursor: 'pointer' }}
-          onClick={() => handleOpen(application, index)}
-        >
-          <Typography variant="h6">{title}</Typography>
-          <Typography variant="body1">{description}</Typography>
-        </Paper>
-      </Grid>
-    );
-  });
+
+  const squares = applications.map((application, index) => (
+    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+      <Paper
+        ref={el => { paperRefs.current[index] = el; }}
+        style={{ height: 250, padding: 16, cursor: 'pointer' }}
+        onClick={() => handleOpen(application.content, index)}
+      >
+        <Typography variant="h6">{application.title}</Typography>
+        <Typography variant="body1">{application.description}</Typography>
+      </Paper>
+    </Grid>
+  ));
 
   return (
     <>
       <Grid container spacing={2}>
         {squares}
       </Grid>
-      <Modal open={open} onClose={handleClose}
-        closeAfterTransition
-      >
+      <Modal open={open} onClose={handleClose} closeAfterTransition>
         <Fade in={open}>
           <Paper
             className={open ? 'modal-box open' : 'modal-box'}
@@ -117,10 +117,10 @@ const ViewApplications = () => {
               overflow: 'hidden',
             }}
           >
-            {modalApplication && modalApplication.getContent()}
+            {modalContent}
           </Paper>
         </Fade>
-      </Modal >
+      </Modal>
     </>
   );
 };
