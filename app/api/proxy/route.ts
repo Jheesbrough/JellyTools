@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(response.data, { status: response.status });
   } catch (error) {
-    console.log("Error making request:", error);
+    console.log("Error making request to URL:", url.toString(), "Error:", error);
     return NextResponse.json({ error: 'Error making request' }, { status: 500 });
   }
 }

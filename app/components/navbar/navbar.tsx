@@ -5,8 +5,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
-import ApiKeyMenu from './ApiKeyMenu';
-import WSButton from './WSButton';
+import ApiKeyMenu from '../navbar/ApiKeyMenu';
+import WSButton from '../WSButton';
 
 const Navbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

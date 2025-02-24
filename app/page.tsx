@@ -1,7 +1,7 @@
 import React from 'react';
-import Navbar from "./components/navbar";
+import Navbar from "./components/navbar/navbar";
 import { APIProvider } from './contexts/apiContexts';
-import Applications from './components/applications';
+import ViewApplications from './components/viewApplications';
 import { Container } from '@mui/material';
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
       <div>
         <Navbar />
         <Container sx={{ mt: 3 }}>
-          <Applications />
+          <ViewApplications />
         </Container>
       </div>
     </APIProvider>

@@ -2,7 +2,7 @@ import React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
-import { useJellyfin, useJellyseer } from '../contexts/apiContexts';
+import { useJellyfin, useJellyseer } from '../../contexts/apiContexts';
 
 
 const ApiKeyMenu: React.FC = () => {

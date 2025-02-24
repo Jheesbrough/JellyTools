@@ -35,6 +35,16 @@ export default class SwaggerAgent {
     this.apiKey = apiKey;
   }
 
+
+  /**
+   * Makes an HTTP request to the specified path with the given query parameters.
+   * Sends a POST request to the '/api/proxy' endpoint with the necessary details
+   * including baseURL, path, query, apiKey, and headerType in the request body.
+   *
+   * @param {string} path - The path to which the request is made.
+   * @param {Record<string, string>} [query={}] - An optional object containing query parameters.
+   * @returns {Promise<any | null>} - A promise that resolves to the response data in JSON format if the request is successful, or null if an error occurs.
+   */
   async makeRequest(path: string, query: Record<string, string> = {}) {
     try {
       const response = await fetch('/api/proxy', {
