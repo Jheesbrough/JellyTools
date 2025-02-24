@@ -3,7 +3,8 @@ import React, { useState, useRef } from 'react';
 import { Paper, Modal, Typography, Fade } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import MovieLeaderboard from "./applications/movieLeaderboard";
-import FileSize from './applications/fileSize';
+import MovieFileSize from "./applications/movieFileSize";
+import SeriesFileSize from "./applications/seriesFileSize";
 
 interface ModalStyle {
   top: number;
@@ -78,9 +79,14 @@ const ViewApplications = () => {
       content: <MovieLeaderboard />
     },
     {
-      title: "File Size",
+      title: "Movie File Size",
       description: "A list of movies and their file sizes.",
-      content: <FileSize />
+      content: <MovieFileSize />
+    },
+    {
+      title: "Series File Size",
+      description: "A list of series and their file sizes.",
+      content: <SeriesFileSize />
     }
   ];
 
