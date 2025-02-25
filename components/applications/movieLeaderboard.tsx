@@ -4,10 +4,11 @@ import { useJellyfin } from '@/utils/contexts/apiContexts';
 import { SelectChangeEvent, Stack } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
+import { Item, ItemResponse } from '@/utils/types';
 
 const MovieLeaderboard: React.FC = () => {
   const [sortMethod, setSortMethod] = useState<string>('played');
-  const [watchedMovies, setWatchedMovies] = useState<{ name: string; count: number }[]>([]);
+  const [watchedMovies, setWatchedMovies] = useState<Item[]>([]);
   const jellyfin = useJellyfin();
 
   const handleSortMethodChange = (event: SelectChangeEvent<string>) => {
@@ -23,7 +24,7 @@ const MovieLeaderboard: React.FC = () => {
 
     for (const user of users) {
       const watched = await jellyfin.makeRequest(`users/${user.Id}/items?IncludeItemTypes=Movie&Recursive=true&Filters=IsPlayed`);
-      watched.Items.forEach((item: any) => {
+      watched.Items.forEach((item: ItemResponse) => {
         const count = sortMethod === 'played' ? 1 : item.UserData.PlayCount || 0;
         if (movieCount[item.Name]) {
           movieCount[item.Name] += count;
@@ -35,7 +36,15 @@ const MovieLeaderboard: React.FC = () => {
 
     const watchedMovies = Object.entries(movieCount)
       .sort((a, b) => b[1] - a[1])
-      .map(([name, count]) => ({ name, count }));
+      .map(([name, views]) => ({
+        id:'',
+        name,
+        views,
+        type: 'Movie',
+        size: null,
+        lastPlayedDate: null,
+        dateCreated: null
+      }));
 
     setWatchedMovies(watchedMovies);
   };
@@ -48,7 +57,7 @@ const MovieLeaderboard: React.FC = () => {
           View Leaderboard
         </Button>
       </Stack>
-      <LeaderboardTable items={watchedMovies} columns={['Movie Name', 'Watched Count']} />
+      <LeaderboardTable items={watchedMovies} columns={['Name', 'Total Views']} />
     </div>
   );
 };

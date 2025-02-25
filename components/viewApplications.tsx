@@ -131,7 +131,7 @@ const ViewApplications = () => {
               height: modalStyle.height,
               position: 'absolute',
               outline: 'none',
-              padding: 4,
+              padding: 3,
               overflow: 'hidden',
             }}
           >

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { Typography, Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
-import humanFileSize from '@/utils/humanFileSize';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
+import { Item, ItemResponse } from '@/utils/types';
 
 const MovieFileSize: React.FC = () => {
-  const [fileSizes, setFileSizes] = useState<{ name: string; size: number }[]>([]);
+  const [fileSizes, setFileSizes] = useState<Item[]>([]);
   const jellyfin = useJellyfin();
 
   const handleButtonClick = async () => {
@@ -16,11 +15,16 @@ const MovieFileSize: React.FC = () => {
     const response = await jellyfin.makeRequest("Items", { IncludeItemTypes: "Movie", Recursive: "true", Fields: "MediaSources" });
 
     const sortedItems = response.Items
-      .map((item: any) => ({
+      .map((item: ItemResponse) => ({
+        id: item.Id,
         name: item.Name,
-        size: item.MediaSources?.[0]?.Size || 0
+        size: item.MediaSources?.[0]?.Size || 0,
+        type: item.Type,
+        views: item.UserData?.PlayCount || 0,
+        lastPlayedDate: item.UserData?.LastPlayedDate,
+        dateCreated: item.DateCreated
       }))
-      .sort((a: any, b: any) => b.size - a.size);
+      .sort((a: Item, b: Item) => (b.size || 0) - (a.size || 0));
 
     setFileSizes(sortedItems);
   };
@@ -32,7 +36,7 @@ const MovieFileSize: React.FC = () => {
       </Button>
       <LeaderboardTable
         items={fileSizes}
-        columns={['Movie Name', 'File Size']}
+        columns={['Name', 'File Size']}
       />
     </div>
   );

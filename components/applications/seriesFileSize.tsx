@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { Typography, Paper } from '@mui/material';
-import humanFileSize from '@/utils/humanFileSize';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
+import { Item, ItemResponse } from '@/utils/types';
 
 const SeriesFileSize: React.FC = () => {
-  const [fileSizes, setFileSizes] = useState<{ name: string; size: number }[]>([]);
+  const [fileSizes, setFileSizes] = useState<Item[]>([]);
   const jellyfin = useJellyfin();
 
   const handleButtonClick = async () => {
@@ -15,21 +14,32 @@ const SeriesFileSize: React.FC = () => {
     }
     const response = await jellyfin.makeRequest("Items", { IncludeItemTypes: "Series,Episode", Recursive: "true", Fields: "MediaSources,SeriesId" });
 
-    const seriesMap: { [key: string]: { name: string; size: number } } = {};
+    const seriesMap: { [key: string]: Item } = {};
 
-    response.Items.forEach((item: any) => {
+    response.Items.forEach((item: ItemResponse) => {
       if (item.Type === "Episode") {
         const seriesId = item.SeriesId;
         const size = item.MediaSources?.[0]?.Size || 0;
         if (seriesMap[seriesId]) {
-          seriesMap[seriesId].size += size;
+          if (seriesMap[seriesId].size) {
+            seriesMap[seriesId].size += size;
+
+          }
         } else {
-          seriesMap[seriesId] = { name: item.SeriesName, size };
+          seriesMap[seriesId] = {
+            id: seriesId,
+            name: item.SeriesName,
+            size,
+            type: "Series",
+            views: 0,
+            lastPlayedDate: null,
+            dateCreated: null
+          };
         }
       }
     });
 
-    const sortedItems = Object.values(seriesMap).sort((a, b) => b.size - a.size);
+    const sortedItems = Object.values(seriesMap).sort((a, b) => (b.size || 0) - (a.size || 0));
 
     setFileSizes(sortedItems);
   };
@@ -41,7 +51,7 @@ const SeriesFileSize: React.FC = () => {
       </Button>
       <LeaderboardTable
         items={fileSizes}
-        columns={['Series Name', 'File Size']}
+        columns={['Name', 'File Size']}
       />
     </div>
   );

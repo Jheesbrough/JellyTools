@@ -1,10 +1,11 @@
 import React from 'react';
 import { Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
 import humanFileSize from '@/utils/humanFileSize';
+import { Item } from '@/utils/types';
 
 interface LeaderboardTableProps {
-  items: { type?: string; name: string; views?: number; size?: number }[];
-  columns: string[];
+  items: Item[];
+  columns: ('Name' | 'Total Views' | 'File Size' | 'Type')[];
 }
 
 const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) => {
@@ -19,7 +20,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) =
           </TableRow>
         </TableHead>
         <TableBody>
-          {items.map((item: any, index: number) => (
+          {items.map((item: Item, index: number) => (
             <TableRow key={`${item.name}-${index}`}>
               {columns.includes('Type') && <TableCell>{item.type}</TableCell>}
               <TableCell>{item.name}</TableCell>
