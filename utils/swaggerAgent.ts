@@ -24,7 +24,7 @@ export default class SwaggerAgent {
 
   // This is a hook for subclasses to do any setup they need
   setup() {
-    return
+    return;
   }
 
   setBaseURL(baseURL: string) {
@@ -35,17 +35,17 @@ export default class SwaggerAgent {
     this.apiKey = apiKey;
   }
 
-
   /**
    * Makes an HTTP request to the specified path with the given query parameters.
-   * Sends a POST request to the '/api/proxy' endpoint with the necessary details
-   * including baseURL, path, query, apiKey, and headerType in the request body.
+   * Sends a request to the '/api/proxy' endpoint with the necessary details
+   * including baseURL, path, query, apiKey, headerType, and method in the request body.
    *
+   * @param {string} method - The HTTP method to use for the request (e.g., 'GET', 'POST').
    * @param {string} path - The path to which the request is made.
    * @param {Record<string, string>} [query={}] - An optional object containing query parameters.
    * @returns {Promise<any | null>} - A promise that resolves to the response data in JSON format if the request is successful, or null if an error occurs.
    */
-  async makeRequest(path: string, query: Record<string, string> = {}) {
+  async makeRequest(method: string, path: string, query: Record<string, string> = {}) {
     try {
       const response = await fetch('/api/proxy', {
         method: 'POST',
@@ -58,11 +58,17 @@ export default class SwaggerAgent {
           query: query,
           apiKey: this.apiKey,
           headerType: this.headerType,
+          method: method,
         }),
       });
 
       if (response.ok) {
-        return await response.json();
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+          return await response.json();
+        } else {
+          return await response.text();
+        }
       }
     } catch (error) {
       console.log("Error making request:", error);
@@ -73,7 +79,7 @@ export default class SwaggerAgent {
   async validate() {
     try {
       console.log("Validating with:", this.baseURL, this.apiKey);
-      const response = await this.makeRequest(this.authEndpoint);
+      const response = await this.makeRequest('GET', this.authEndpoint);
       if (response) {
         this.authorised = true;
         return true;

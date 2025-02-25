@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import { Item } from '@/utils/types';
+import { useJellyseer } from '@/utils/contexts/apiContexts';
 
 const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>> }> = ({ filteredItems, setWatchedItems }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const jellyseer = useJellyseer();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -22,9 +25,9 @@ const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
     setConfirmOpen(false);
   };
 
-  const handleConfirmDelete = () => {
-    // TODO: Implement the actual deletion logic
-    setWatchedItems([]);
+  const handleConfirmDelete = async () => {
+    const itemIds = filteredItems.map(item => item.id);
+    await jellyseer.deleteItems(itemIds);
     setConfirmOpen(false);
     setOpen(false);
   };

@@ -19,7 +19,7 @@ const SeriesFileSize: React.FC = () => {
       setLoading(false);
       return;
     }
-    const response = await jellyfin.makeRequest("Items", { IncludeItemTypes: "Series,Episode", Recursive: "true", Fields: "MediaSources,SeriesId" });
+    const response = await jellyfin.makeRequest("GET", "Items", { IncludeItemTypes: "Series,Episode", Recursive: "true", Fields: "MediaSources,SeriesId" });
 
     const seriesMap: { [key: string]: Item } = {};
 

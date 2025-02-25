@@ -25,11 +25,11 @@ const SeriesLeaderboard: React.FC = () => {
       setLoading(false);
       return;
     }
-    const users = await jellyfin.makeRequest("users");
+    const users = await jellyfin.makeRequest("GET", "users");
     const seriesMap: { [key: string]: Item } = {};
 
     for (const user of users) {
-      const response = await jellyfin.makeRequest(`users/${user.Id}/items`, { IncludeItemTypes: "Series,Episode", Recursive: "true", Fields: "UserData,SeriesId", Filters: "IsPlayed", SortBy: "SortName", SortOrder: "Ascending" });
+      const response = await jellyfin.makeRequest("GET", `users/${user.Id}/items`, { IncludeItemTypes: "Series,Episode", Recursive: "true", Fields: "UserData,SeriesId", Filters: "IsPlayed", SortBy: "SortName", SortOrder: "Ascending" });
 
       response.Items.forEach((item: ItemResponse) => {
         if (item.Type === "Episode") {
