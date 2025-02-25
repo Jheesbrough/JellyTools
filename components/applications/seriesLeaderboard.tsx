@@ -5,11 +5,13 @@ import { SelectChangeEvent, Stack, LinearProgress } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
 import { Item, ItemResponse } from '@/utils/types';
+import CheckAPIKeys from '@/components/checkAPIkeys';
 
 const SeriesLeaderboard: React.FC = () => {
   const [sortMethod, setSortMethod] = useState<string>('played');
   const [seriesViews, setSeriesViews] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
   const jellyfin = useJellyfin();
 
   const handleSortMethodChange = (event: SelectChangeEvent<string>) => {
@@ -19,6 +21,7 @@ const SeriesLeaderboard: React.FC = () => {
   const handleButtonClick = async () => {
     setLoading(true);
     if (!jellyfin.authorised) {
+      setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
@@ -49,8 +52,11 @@ const SeriesLeaderboard: React.FC = () => {
     setLoading(false);
   };
 
+  const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
+
   return (
     <div>
+      {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>
         <SortMethodSelector sortMethod={sortMethod} handleSortMethodChange={handleSortMethodChange} />
         <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>

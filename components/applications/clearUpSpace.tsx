@@ -6,6 +6,7 @@ import DesiredSpaceInput from './clearUpSpace/DesiredSpaceInput';
 import DeleteMediaButton from './clearUpSpace/DeleteMediaButton';
 import HumanFileSize from '@/utils/humanFileSize';
 import { Item, ItemResponse } from '@/utils/types';
+import CheckAPIKeys from '@/components/checkAPIkeys';
 
 const ClearUpSpace: React.FC = () => {
 
@@ -14,11 +15,13 @@ const ClearUpSpace: React.FC = () => {
   const [desiredSpace, setDesiredSpace] = useState<number>(0);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
   const jellyfin = useJellyfin();
 
   const handleButtonClick = async () => {
     setLoading(true);
     if (!jellyfin.authorised) {
+      setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
@@ -79,6 +82,8 @@ const ClearUpSpace: React.FC = () => {
     setLoading(false);
   };
 
+  const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
+
   useEffect(() => {
     const filtered = watchedItems.reduce<{ items: typeof watchedItems; totalSize: number }>((acc, item) => {
       if (acc.totalSize < desiredSpace * 1024 * 1024 * 1024) { // Convert desiredSpace from GB to bytes
@@ -93,6 +98,7 @@ const ClearUpSpace: React.FC = () => {
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       <Typography variant="h6" align="center">Clear Up Space</Typography>
 
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>

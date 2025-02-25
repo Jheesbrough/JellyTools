@@ -1,9 +1,14 @@
 import React from 'react';
-import { Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer, IconButton } from '@mui/material';
+import { Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer, IconButton, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import humanFileSize from '@/utils/humanFileSize';
 import { formatDistanceToNow } from 'date-fns';
 import { Item } from "@/utils/types";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.common.white,
+}));
 
 const ClearUpSpaceTable: React.FC<{ filteredItems: Item[], setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>> }> = ({ filteredItems, setWatchedItems }) => {
   const handleRemoveItem = (index: number) => {
@@ -15,13 +20,13 @@ const ClearUpSpaceTable: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
       <Table stickyHeader size='small'>
         <TableHead>
           <TableRow>
-            <TableCell>Actions</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Total Views</TableCell>
-            <TableCell>File Size</TableCell>
-            <TableCell>Last Played Date</TableCell>
-            <TableCell>Date Created</TableCell>
+            <StyledTableCell>Actions</StyledTableCell>
+            <StyledTableCell>Type</StyledTableCell>
+            <StyledTableCell>Name</StyledTableCell>
+            <StyledTableCell>Total Views</StyledTableCell>
+            <StyledTableCell>File Size</StyledTableCell>
+            <StyledTableCell>Last Played Date</StyledTableCell>
+            <StyledTableCell>Date Created</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>

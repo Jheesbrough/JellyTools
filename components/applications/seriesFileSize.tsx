@@ -4,15 +4,18 @@ import { useJellyfin } from '@/utils/contexts/apiContexts';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import { Item, ItemResponse } from '@/utils/types';
 import { LinearProgress } from '@mui/material';
+import CheckAPIKeys from '@/components/checkAPIkeys';
 
 const SeriesFileSize: React.FC = () => {
   const [fileSizes, setFileSizes] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
   const jellyfin = useJellyfin();
 
   const handleButtonClick = async () => {
     setLoading(true);
     if (!jellyfin.authorised) {
+      setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
@@ -49,8 +52,11 @@ const SeriesFileSize: React.FC = () => {
     setLoading(false);
   };
 
+  const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
+
   return (
     <div style={{ padding: '16px' }}>
+      {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
         Get Series File Sizes
       </Button>

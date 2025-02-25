@@ -83,7 +83,7 @@ const ViewApplications = () => {
         </div>
         <div>
           {application.tags.map((tag, tagIndex) => (
-        <Chip key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
+        <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
           ))}
         </div>
       </Paper>

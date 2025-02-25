@@ -1,5 +1,6 @@
 import React from 'react';
 import { Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import humanFileSize from '@/utils/humanFileSize';
 import { Item } from '@/utils/types';
 
@@ -8,6 +9,11 @@ interface LeaderboardTableProps {
   columns: ('Name' | 'Total Views' | 'File Size' | 'Type')[];
 }
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.common.white,
+}));
+
 const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) => {
   return (
     <TableContainer component={Paper} style={{ maxHeight: '400px', overflowY: 'auto', marginTop: '16px', paddingBottom: '16px' }}>
@@ -15,7 +21,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) =
         <TableHead>
           <TableRow>
             {columns.map((column, index) => (
-              <TableCell key={index}>{column}</TableCell>
+              <StyledTableCell key={`${column}-${index}`}>{column}</StyledTableCell>
             ))}
           </TableRow>
         </TableHead>
