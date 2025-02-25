@@ -1,12 +1,8 @@
 "use client";
 import React, { useState, useRef } from 'react';
-import { Paper, Modal, Typography, Fade } from '@mui/material';
+import { Paper, Modal, Typography, Fade, Chip } from '@mui/material';
 import Grid from "@mui/material/Grid2";
-import MovieLeaderboard from "@/components/applications/movieLeaderboard";
-import MovieFileSize from "@/components/applications/movieFileSize";
-import SeriesFileSize from "@/components/applications/seriesFileSize";
-import SeriesLeaderboard from "@/components/applications/seriesLeaderboard";
-import ClearUpSpace from './applications/clearUpSpace';
+import { applications } from './applicationsList';
 
 interface ModalStyle {
   top: number;
@@ -74,43 +70,22 @@ const ViewApplications = () => {
     animateModalSize(modalStyle, initialModalStyle, 300, () => setOpen(false));
   };
 
-  const applications = [
-    {
-      title: "Movie Leaderboard",
-      description: "A list of top-rated movies based on how many times they have been viewed",
-      content: <MovieLeaderboard />
-    },
-    {
-      title: "Movie File Size",
-      description: "A list of movies and their file sizes.",
-      content: <MovieFileSize />
-    },
-    {
-      title: "Series File Size",
-      description: "A list of series and their file sizes.",
-      content: <SeriesFileSize />
-    },
-    {
-      title: "Series Leaderboard",
-      description: "A list of top-rated series based on how many times they have been viewed",
-      content: <SeriesLeaderboard />
-    },
-    {
-      title: "Clear Up Space",
-      description: "A tool to help you clear up space by deleting unneeded movies and series",
-      content: <ClearUpSpace />
-    }
-  ];
-
   const squares = applications.map((application, index) => (
     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
       <Paper
         ref={el => { paperRefs.current[index] = el; }}
-        style={{ height: 250, padding: 16, cursor: 'pointer' }}
+        style={{ height: 250, padding: 16, cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         onClick={() => handleOpen(application.content, index)}
       >
-        <Typography variant="h6">{application.title}</Typography>
-        <Typography variant="body1">{application.description}</Typography>
+        <div>
+          <Typography variant="h6">{application.title}</Typography>
+          <Typography variant="body1">{application.description}</Typography>
+        </div>
+        <div>
+          {application.tags.map((tag, tagIndex) => (
+        <Chip key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
+          ))}
+        </div>
       </Paper>
     </Grid>
   ));

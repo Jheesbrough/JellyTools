@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { SelectChangeEvent, Stack } from '@mui/material';
+import { SelectChangeEvent, Stack, LinearProgress } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
 import { Item, ItemResponse } from '@/utils/types';
@@ -9,6 +9,7 @@ import { Item, ItemResponse } from '@/utils/types';
 const MovieLeaderboard: React.FC = () => {
   const [sortMethod, setSortMethod] = useState<string>('played');
   const [watchedMovies, setWatchedMovies] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const jellyfin = useJellyfin();
 
   const handleSortMethodChange = (event: SelectChangeEvent<string>) => {
@@ -16,7 +17,9 @@ const MovieLeaderboard: React.FC = () => {
   };
 
   const handleButtonClick = async () => {
+    setLoading(true);
     if (!jellyfin.authorised) {
+      setLoading(false);
       return;
     }
     const users = await jellyfin.makeRequest("users");
@@ -47,16 +50,18 @@ const MovieLeaderboard: React.FC = () => {
       }));
 
     setWatchedMovies(watchedMovies);
+    setLoading(false);
   };
 
   return (
     <div>
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>
         <SortMethodSelector sortMethod={sortMethod} handleSortMethodChange={handleSortMethodChange} />
-        <Button variant="contained" color="primary" onClick={handleButtonClick} >
+        <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
           View Leaderboard
         </Button>
       </Stack>
+      {loading && <LinearProgress />}
       <LeaderboardTable items={watchedMovies} columns={['Name', 'Total Views']} />
     </div>
   );

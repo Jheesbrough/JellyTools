@@ -3,7 +3,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import { useJellyfin, useJellyseer } from '../../utils/contexts/apiContexts';
-
+import ErrorIcon from '@mui/icons-material/Error';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const ApiKeyMenu: React.FC = () => {
   const jellyfin = useJellyfin();
@@ -75,11 +76,16 @@ const ApiKeyMenu: React.FC = () => {
   const renderMenuItem = (id: string, label: string) => {
     const isAuthorized = id === 'jellyfin' ? jellyfin.authorised : jellyseer.authorised;
     return (
-      <MenuItem key={id} onClick={() => handleManageApiKeys(id)} style={{ backgroundColor: isAuthorized ? 'green' : 'red' }}>
-        <Typography variant="h6">
+      <MenuItem key={id} onClick={() => handleManageApiKeys(id)}>
+        {isAuthorized ? (
+          <CheckCircleIcon style={{ color: 'green', marginRight: 'auto' }} />
+        ) : (
+          <ErrorIcon style={{ color: 'red', marginRight: 'auto' }} />
+        )}
+        <Typography variant="h6" paddingLeft="10px">
           {label}
         </Typography>
-        <EditIcon style={{ marginLeft: 'auto' }} />
+        <EditIcon style={{ marginLeft: '10px' }} />
       </MenuItem>
     );
   };
