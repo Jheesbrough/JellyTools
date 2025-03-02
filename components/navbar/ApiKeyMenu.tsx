@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import EditIcon from '@mui/icons-material/Edit';
-import { useJellyfin, useJellyseer } from '../../utils/contexts/apiContexts';
-import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EditIcon from '@mui/icons-material/Edit';
+import ErrorIcon from '@mui/icons-material/Error';
+import ScienceIcon from '@mui/icons-material/Science';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import ScienceIcon from '@mui/icons-material/Science';
-import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import React, { useState } from 'react';
+import { useJellyfin, useJellyseer } from '../../utils/contexts/apiContexts';
 
 interface ApiKeyMenuProps {
   isDialogOpen: boolean;
+  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen }) => {
+const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) => {
   const jellyfin = useJellyfin();
   const jellyseer = useJellyseer();
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [currentApp, setCurrentApp] = useState<string | null>(null);
   const [endpoint, setEndpoint] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -145,7 +145,7 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen }) => {
     <>
       {renderMenuItem('jellyfin', 'Jellyfin')}
       {renderMenuItem('jellyseer', 'Jellyseer')}
-      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Manage API Keys for {currentApp ? currentApp.charAt(0).toUpperCase() + currentApp.slice(1) : ''}</DialogTitle>
         <DialogContent>
           <TextField

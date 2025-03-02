@@ -1,35 +1,35 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
 import AppBar from '@mui/material/AppBar';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Popper from '@mui/material/Popper';
-import Paper from '@mui/material/Paper';
-import ApiKeyMenu from './ApiKeyMenu';
+import React, { useEffect, useRef, useState } from 'react';
 import WSButton from '../WSButton';
+import ApiKeyMenu from './ApiKeyMenu';
 
 const Navbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const popperRef = useRef<HTMLDivElement | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false); // Moved state here
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen((prevOpen) => !prevOpen);
-    setIsDialogOpen((prevOpen) => !prevOpen);
+    setDialogOpen((prevOpen) => !prevOpen);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
-    setIsDialogOpen(false);
+    setDialogOpen(false);
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleClickOutside = (event: MouseEvent) => {
-        if (popperRef.current && !popperRef.current.contains(event.target as Node) && !isDialogOpen) {
+        if (popperRef.current && !popperRef.current.contains(event.target as Node) && !dialogOpen) {
           handleClose();
         }
       };
@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [open, isDialogOpen]);
+  }, [open, dialogOpen]);
 
   return (
     <AppBar position="static">
@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
         <Popper open={open} anchorEl={anchorEl} placement="top-start" ref={popperRef}>
           {({ TransitionProps }) => (
             <Paper {...TransitionProps} style={{ padding: '10px' }}>
-              <ApiKeyMenu isDialogOpen={isDialogOpen} />
+              <ApiKeyMenu isDialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
             </Paper>
           )}
         </Popper>
