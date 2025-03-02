@@ -12,21 +12,24 @@ const Navbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const popperRef = useRef<HTMLDivElement | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen((prevOpen) => !prevOpen);
+    setIsDialogOpen((prevOpen) => !prevOpen);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
     setOpen(false);
+    setIsDialogOpen(false);
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleClickOutside = (event: MouseEvent) => {
-        if (popperRef.current && !popperRef.current.contains(event.target as Node)) {
+        if (popperRef.current && !popperRef.current.contains(event.target as Node) && !isDialogOpen) {
           handleClose();
         }
       };
@@ -41,7 +44,7 @@ const Navbar: React.FC = () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [open]);
+  }, [open, isDialogOpen]);
 
   return (
     <AppBar position="static">
@@ -61,7 +64,7 @@ const Navbar: React.FC = () => {
         <Popper open={open} anchorEl={anchorEl} placement="top-start" ref={popperRef}>
           {({ TransitionProps }) => (
             <Paper {...TransitionProps} style={{ padding: '10px' }}>
-              <ApiKeyMenu />
+              <ApiKeyMenu isDialogOpen={isDialogOpen} />
             </Paper>
           )}
         </Popper>

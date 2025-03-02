@@ -92,7 +92,7 @@ const ViewApplications = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} m={2}>
         {squares}
       </Grid>
       <Modal open={open} onClose={handleClose} closeAfterTransition>
