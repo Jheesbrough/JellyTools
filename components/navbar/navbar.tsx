@@ -12,12 +12,12 @@ const Navbar: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const popperRef = useRef<HTMLDivElement | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false); // Moved state here
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen((prevOpen) => !prevOpen);
-    setDialogOpen((prevOpen) => !prevOpen);
+    setDialogOpen(false);
   };
 
   const handleClose = () => {

@@ -11,12 +11,18 @@ interface LeaderboardTableProps {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
+  color: theme.palette.primary.contrastText,
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
 }));
 
 const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) => {
   return (
-    <TableContainer component={Paper} style={{ maxHeight: '400px', overflowY: 'auto', marginTop: '16px', paddingBottom: '16px' }}>
+    <TableContainer component={Paper} style={{ marginTop: '16px', paddingBottom: '2em' }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -27,12 +33,12 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ items, columns }) =
         </TableHead>
         <TableBody>
           {items.map((item: Item, index: number) => (
-            <TableRow key={`${item.name}-${index}`}>
+            <StyledTableRow key={`${item.name}-${index}`}>
               {columns.includes('Type') && <TableCell>{item.type}</TableCell>}
               <TableCell>{item.name}</TableCell>
               {columns.includes('Total Views') && <TableCell>{item.views}</TableCell>}
               {columns.includes('File Size') && <TableCell>{item.size ? humanFileSize(item.size) : ''}</TableCell>}
-            </TableRow>
+            </StyledTableRow>
           ))}
         </TableBody>
       </Table>

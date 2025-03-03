@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { SelectChangeEvent, Stack, LinearProgress } from '@mui/material';
+import { SelectChangeEvent, Stack, LinearProgress, Typography, Box } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
 import { Item, ItemResponse } from '@/utils/types';
@@ -55,7 +55,7 @@ const SeriesLeaderboard: React.FC = () => {
   const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
 
   return (
-    <div>
+    <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>
         <SortMethodSelector sortMethod={sortMethod} handleSortMethodChange={handleSortMethodChange} />
@@ -65,7 +65,7 @@ const SeriesLeaderboard: React.FC = () => {
       </Stack>
       {loading && <LinearProgress />}
       <LeaderboardTable items={seriesViews} columns={['Name', 'Total Views']} />
-    </div>
+    </Box>
   );
 };
 

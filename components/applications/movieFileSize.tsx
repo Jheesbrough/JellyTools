@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import { Item, ItemResponse } from '@/utils/types';
-import { LinearProgress } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import CheckAPIKeys from '@/components/checkAPIkeys';
 
 const MovieFileSize: React.FC = () => {
@@ -40,7 +40,7 @@ const MovieFileSize: React.FC = () => {
   const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
 
   return (
-    <div style={{ padding: '16px' }}>
+    <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
         Get Movie File Sizes
@@ -50,7 +50,7 @@ const MovieFileSize: React.FC = () => {
         items={fileSizes}
         columns={['Name', 'File Size']}
       />
-    </div>
+    </Box>
   );
 };
 
