@@ -8,6 +8,8 @@ import HumanFileSize from '@/utils/humanFileSize';
 import { Item, ItemResponse } from '@/utils/types';
 import CheckAPIKeys from '@/components/checkAPIkeys';
 import HelpIcon from '@mui/icons-material/Help';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsDialog from './clearUpSpace/SettingsDialog';
 
 const ClearUpSpace: React.FC = () => {
 
@@ -17,6 +19,8 @@ const ClearUpSpace: React.FC = () => {
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
+  const [deleteMethod, setDeleteMethod] = useState<'jellyfin' | 'jellyseer'>('jellyfin');
+  const [showSettingsDialog, setShowSettingsDialog] = useState<boolean>(false);
   const jellyfin = useJellyfin();
 
   const handleButtonClick = async () => {
@@ -84,6 +88,8 @@ const ClearUpSpace: React.FC = () => {
   };
 
   const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
+  const handleOpenSettingsDialog = () => setShowSettingsDialog(true);
+  const handleCloseSettingsDialog = () => setShowSettingsDialog(false);
 
   useEffect(() => {
     const filtered = watchedItems.reduce<{ items: typeof watchedItems; totalSize: number }>((acc, item) => {
@@ -100,6 +106,7 @@ const ClearUpSpace: React.FC = () => {
   return (
     <Box style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
+      {showSettingsDialog && <SettingsDialog open={showSettingsDialog} handleClose={handleCloseSettingsDialog} deleteMethod={deleteMethod} setDeleteMethod={setDeleteMethod} />}
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center', position: 'relative' }}>
         <DesiredSpaceInput desiredSpace={desiredSpace} setDesiredSpace={setDesiredSpace} />
         <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
@@ -109,10 +116,15 @@ const ClearUpSpace: React.FC = () => {
         <Typography variant="body1">
           {filteredItems.length} items selected for deletion, total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
         </Typography>
-        <DeleteMediaButton filteredItems={filteredItems} setWatchedItems={setWatchedItems} />
+        <DeleteMediaButton filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} />
         <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
           <IconButton>
             <HelpIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Settings">
+          <IconButton onClick={handleOpenSettingsDialog}>
+            <SettingsIcon />
           </IconButton>
         </Tooltip>
       </Stack>
