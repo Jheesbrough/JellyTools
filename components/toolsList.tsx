@@ -1,10 +1,10 @@
-import MovieLeaderboard from "@/components/applications/movieLeaderboard";
-import MovieFileSize from "@/components/applications/movieFileSize";
-import SeriesFileSize from "@/components/applications/seriesFileSize";
-import SeriesLeaderboard from "@/components/applications/seriesLeaderboard";
-import ClearUpSpace from './applications/clearUpSpace';
+import MovieLeaderboard from "@/components/tools/movieLeaderboard";
+import MovieFileSize from "@/components/tools/movieFileSize";
+import SeriesFileSize from "@/components/tools/seriesFileSize";
+import SeriesLeaderboard from "@/components/tools/seriesLeaderboard";
+import ClearUpSpace from './tools/clearUpSpace';
 
-export const applications = [
+export const tools = [
   {
     title: "Movie Leaderboard",
     description: "All movies sorted by how many times they have been watched",
