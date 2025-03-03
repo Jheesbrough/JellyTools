@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import { Item } from '@/utils/types';
 import { useJellyseer } from '@/utils/contexts/apiContexts';
 
-const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>> }> = ({ filteredItems, setWatchedItems }) => {
+interface DeleteMediaButtonProps {
+  filteredItems: Item[];
+  setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  deleteMethod: 'jellyfin' | 'jellyseer';
+}
+
+const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ filteredItems, setWatchedItems, deleteMethod }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cooldown, setCooldown] = useState(5);
 
   const jellyseer = useJellyseer();
 
@@ -19,6 +26,7 @@ const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
 
   const handleDelete = () => {
     setConfirmOpen(true);
+    setCooldown(5);
   };
 
   const handleConfirmClose = () => {
@@ -27,10 +35,21 @@ const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
 
   const handleConfirmDelete = async () => {
     const itemIds = filteredItems.map(item => item.id);
-    await jellyseer.deleteItems(itemIds);
+    if (deleteMethod === 'jellyfin') {
+      throw new Error('Not implemented');
+    } else {
+      await jellyseer.deleteItems(itemIds);
+    }
     setConfirmOpen(false);
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (confirmOpen && cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [confirmOpen, cooldown]);
 
   return (
     <>
@@ -64,15 +83,23 @@ const DeleteMediaButton: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
         <DialogTitle>Are You Sure?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you&apos;re sure you want to delete the selected media?
+            {deleteMethod === 'jellyseer' ? (
+              <>
+                Are you sure you want to delete the selected media via <span style={{ color: 'red', fontWeight: 'bold' }}>Jellyseer</span>? This will remove all open requests for the selected media and remove it from attached services.
+              </>
+            ) : (
+              <>
+                Are you sure you want to delete the selected media using the <span style={{ color: 'red', fontWeight: 'bold' }}>Jellyfin</span> API? If you run any services like Jellyseer they may try and re-add the missing media. Remove requests from those services before deleting or use the Jellyseer delete method.
+              </>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleConfirmClose} color="success">
             Cancel
           </Button>
-          <Button onClick={handleConfirmDelete} color="error">
-            Confirm Delete
+          <Button onClick={handleConfirmDelete} color="error" disabled={cooldown > 0}>
+            Confirm Delete {cooldown > 0 && `(${cooldown})`}
           </Button>
         </DialogActions>
       </Dialog>

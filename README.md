@@ -1,17 +1,21 @@
 # Jellyfin tools
 
-This is (or will be) a collection of tools for the Jellyfin media server.
+<!-- Shields.io -->
+![GitHub](https://img.shields.io/github/license/jheesbrough/jellyfin-tools)
+
+This is a collection of external tools to help manage your [Jellyfin](https://github.com/jellyfin/jellyfin) media server. It uses both the Jellyfin API and the Jellyseer API to fetch data and run various housekeeping tasks.
 
 ## Features
 
+- [x] Clean up space on your server by removing old, unwatched media
+- [x] Fetch the most watched movies and shows
+- [ ] Create sharable graphics and statistics
+- [ ] Get lists of most and least active users
+- [ ] Create nice shareable links to media
+
 ## Developing
 
-```bash
-npm install
-npm run dev
-```
-
-Supports using the Jellyfin and Jellyseer API to manage media libraries and run common tasks.
+Built on node with Next, Tailwind and TypeScript and MUI components. Issues and PRs are welcome.
 
 ### Important quirks
 
