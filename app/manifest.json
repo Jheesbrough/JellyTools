@@ -1,6 +1,6 @@
 {
-  "name": "Jellyfin Tools",
-  "short_name": "Jellyfin Tools",
+  "name": "JellyTools",
+  "short_name": "JellyTools",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

@@ -8,8 +8,8 @@ import Head from 'next/head'
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Jellyfin Tools',
-  description: 'A collection of tools for managing your Jellyfin server.',
+  title: 'JellyTools',
+  description: 'A collection of tools for managing your Jellyfin and Jellyseer servers.',
 }
 
 const roboto = Roboto({
