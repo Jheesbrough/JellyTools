@@ -10,24 +10,27 @@ function validateHttpUrl(url: URL) {
 
 export async function makeRequest(method: 'get' | 'delete', url: URL, apiKey: string) {
   validateHttpUrl(url);
-
+  console.log('Making request to URL:', url.toString());
   const headers = {
     "Content-Type": "application/json",
     "X-Api-Key": apiKey,
   };
 
-  return axios({
-    method: method,
-    url: url.toString(),
-    headers: headers,
-    timeout: 10000,
-    validateStatus: function (status: number) {
-      return status >= 200 && status < 300;
-    },
-    maxRedirects: 5,
-  });
-}
+  try {
+    const apiResponse = await axios({
+      method: method,
+      url: url.toString(),
+      headers: headers,
+      timeout: 10000,
+      validateStatus: function (status: number) {
+        return status >= 200 && status < 300;
+      },
+      maxRedirects: 5,
+    });
 
-export function handleApiResponse(apiResponse: any, response: NextApiResponse) {
-  return NextResponse.json(apiResponse.data, { status: apiResponse.status });
+    const responseData = apiResponse.data || {};
+    return NextResponse.json(responseData, { status: apiResponse.status });
+  } catch (error) {
+    return NextResponse.json({ error: 'Error making request' }, { status: 500 });
+  }
 }

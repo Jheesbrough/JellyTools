@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import { Item } from '@/utils/types';
-import { useJellyseer } from '@/utils/contexts/apiContexts';
+import { useJellyseer, useJellyfin } from '@/utils/contexts/apiContexts';
 
 interface DeleteMediaButtonProps {
   filteredItems: Item[];
@@ -15,6 +15,7 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ filteredItems, se
   const [cooldown, setCooldown] = useState(5);
 
   const jellyseer = useJellyseer();
+  const jellyfin = useJellyfin();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -36,7 +37,7 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ filteredItems, se
   const handleConfirmDelete = async () => {
     const itemIds = filteredItems.map(item => item.id);
     if (deleteMethod === 'jellyfin') {
-      throw new Error('Not implemented');
+      await jellyfin.deleteItems(itemIds);
     } else {
       await jellyseer.deleteItems(itemIds);
     }

@@ -15,22 +15,6 @@ export default class Jellyseer extends SwaggerAgent {
     super(baseURL, apiKey);
   }
 
-  /**
-   * Sets the base URL for the API with the appropriate endpoint.
-   * @param baseURL - The base URL to set.
-   */
-  setBaseURL(baseURL: string): void {
-    this.baseURL = baseURL + "/api/v1";
-  }
-
-  /**
-   * Sets up the necessary headers and endpoints for the API.
-   */
-  setup() {
-    this.headerType = "X-Api-Key";
-    this.setBaseURL(this.baseURL);
-  }
-
   async getMedia(): Promise<any> {
     return await this.sendRequest("GET", "media");
   }
@@ -50,7 +34,6 @@ export default class Jellyseer extends SwaggerAgent {
    */
   async deleteItem(jellyfinItemId: string): Promise<void> {
     let res = await this.getMedia();
-
     const filteredMedia = res.results.filter(
       (item: { jellyfinMediaId: string | null; }) => item.jellyfinMediaId === jellyfinItemId
     );
@@ -66,11 +49,11 @@ export default class Jellyseer extends SwaggerAgent {
     );
 
     if (filteredRequests.length !== 0) {
-      await this.sendRequest("DELETE", `/api/requests/${filteredRequests[0].id}`);
+      await this.sendRequest("DELETE", `requests/${filteredRequests[0].id}`);
     }
 
-    await this.sendRequest("DELETE", `/api/media/${id}`);
-    await this.sendRequest("DELETE", `/api/media/${id}/file`);
+    await this.sendRequest("DELETE", `media/${id}/file`);
+    await this.sendRequest("DELETE", `media/${id}`);
   }
 
   /**
@@ -80,13 +63,14 @@ export default class Jellyseer extends SwaggerAgent {
    */
   async deleteItems(jellyfinItemIds: string[]): Promise<void> {
     let skip = 0;
-    const take = 100; // Adjust the number of items to take per request as needed
+    const take = 100;
     let allMedia: any[] = [];
     let res;
 
     // Fetch all media items with pagination using take and skip
     do {
       res = await this.sendRequest("GET", "media", { filter: "available", take: take.toString(), skip: skip.toString() });
+      console.log(res);
       allMedia = allMedia.concat(res.results);
       skip += take;
     } while (res.results.length === take);
@@ -116,12 +100,12 @@ export default class Jellyseer extends SwaggerAgent {
     );
 
     for (const request of filteredRequests) {
-      await this.sendRequest("DELETE", `/api/requests/${request.id}`);
+      await this.sendRequest("DELETE", `/request/${request.id}`);
     }
 
     for (const id of mediaIds) {
-      await this.sendRequest("DELETE", `/api/media/${id}/file`);
-      await this.sendRequest("DELETE", `/api/media/${id}`);
+      await this.sendRequest("DELETE", `/media/${id}/file`);
+      await this.sendRequest("DELETE", `/media/${id}`);
     }
   }
 
@@ -149,14 +133,11 @@ export default class Jellyseer extends SwaggerAgent {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`HTTP error! status: ${error.response?.status}`);
+        console.error(`Error sending ${method} request to ${endpoint}`, error.message);
       } else {
-        if (error instanceof Error) {
-          throw new Error(`Unexpected error: ${error.message}`);
-        } else {
-          throw new Error('Unexpected error');
-        }
+        console.error(`Error sending ${method} request to ${endpoint}`, error);
       }
+      throw new Error('Error making request');
     }
   }
 }

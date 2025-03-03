@@ -71,6 +71,16 @@ export default class Jellyfin extends SwaggerAgent {
     return await this.fetchData('/Items?IncludeItemTypes=Movie&Recursive=true&Fields=MediaSources');
   }
 
+  async deleteItem(jellyfinItemId: string): Promise<void> {
+    await this.deleteData(`/items/${jellyfinItemId}`);
+  }
+
+  async deleteItems(jellyfinItemIds: string[]): Promise<void> {
+    for (const jellyfinItemId of jellyfinItemIds) {
+      await this.deleteItem(jellyfinItemId);
+    }
+  }
+
   /**
    * Fetches the list of all items.
    * @returns {Promise<any>} - A promise that resolves to the list of all items.
@@ -117,6 +127,25 @@ export default class Jellyfin extends SwaggerAgent {
       }
     } catch (error) {
       console.log(`Error fetching data from ${endpoint}:`, error);
+    }
+    return null;
+  }
+
+  private async deleteData(endpoint: string) {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': this.apiKey,
+        },
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.log(`Error deleting data from ${endpoint}:`, error);
     }
     return null;
   }

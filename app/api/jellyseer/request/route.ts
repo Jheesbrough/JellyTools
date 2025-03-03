@@ -13,18 +13,11 @@ export async function GET(request: NextApiRequest, response: NextApiResponse) {
 
   const apiKey = (await headers()).get('X-Api-Key');
 
-
   if (!baseURL || !apiKey) {
     return NextResponse.json({ error: 'Missing baseURL or API key' }, { status: 400 });
   }
 
-  const url = new URL(`${baseURL}/api/v1/request?` + searchParams.toString());
+  const url = new URL(`api/v1/request?${searchParams.toString()}`, baseURL);
 
-  try {
-    const apiResponse = await makeRequest('get', url, apiKey);
-    return NextResponse.json(apiResponse.data, { status: apiResponse.status });
-  } catch (error) {
-    console.log("Error making request to URL:", url.toString(), "Error:", error);
-    return NextResponse.json({ error: 'Error making request' }, { status: 500 });
-  }
+  return makeRequest('get', url, apiKey);
 }
