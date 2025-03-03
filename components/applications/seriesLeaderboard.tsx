@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { SelectChangeEvent, Stack, LinearProgress, Typography, Box } from '@mui/material';
+import { SelectChangeEvent, Stack, LinearProgress, Typography, Box, IconButton, Tooltip } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
 import { Item, ItemResponse } from '@/utils/types';
 import CheckAPIKeys from '@/components/checkAPIkeys';
+import HelpIcon from '@mui/icons-material/Help';
 
 const SeriesLeaderboard: React.FC = () => {
   const [sortMethod, setSortMethod] = useState<string>('played');
@@ -55,8 +56,13 @@ const SeriesLeaderboard: React.FC = () => {
   const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
 
   return (
-    <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
+    <Box sx={{ maxHeight: '400px', overflowY: 'auto', position: 'relative' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
+      <Tooltip title="This leaderboard shows the total number of views for each series, counted as 1 view per episode. So an episode watched by 3 users would count as 3 views for the series.">
+        <IconButton style={{ position: 'absolute', top: 0, right: 0 }}>
+          <HelpIcon />
+        </IconButton>
+      </Tooltip>
       <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>
         <SortMethodSelector sortMethod={sortMethod} handleSortMethodChange={handleSortMethodChange} />
         <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
-import { Button, Stack, Typography, LinearProgress } from '@mui/material';
+import { Button, Stack, Typography, LinearProgress, Box, Tooltip, IconButton } from '@mui/material';
 import ClearUpSpaceTable from './clearUpSpace/ClearUpSpaceTable';
 import DesiredSpaceInput from './clearUpSpace/DesiredSpaceInput';
 import DeleteMediaButton from './clearUpSpace/DeleteMediaButton';
 import HumanFileSize from '@/utils/humanFileSize';
 import { Item, ItemResponse } from '@/utils/types';
 import CheckAPIKeys from '@/components/checkAPIkeys';
+import HelpIcon from '@mui/icons-material/Help';
 
 const ClearUpSpace: React.FC = () => {
 
@@ -47,7 +48,7 @@ const ClearUpSpace: React.FC = () => {
     });
 
     for (const user of users) {
-      const watchedItems = await jellyfin.makeRequest("GET", `users/${user.Id}/items`, { IncludeItemTypes: "Movie,Episode", Recursive: "true", Fields: "UserData,SeriesId,LastPlayedDate", Filters: "IsPlayed"});
+      const watchedItems = await jellyfin.makeRequest("GET", `users/${user.Id}/items`, { IncludeItemTypes: "Movie,Episode", Recursive: "true", Fields: "UserData,SeriesId,LastPlayedDate", Filters: "IsPlayed" });
       watchedItems.Items.forEach((item: ItemResponse) => {
         const views = item.UserData?.PlayCount || 0;
         const lastPlayedDate = item.UserData.LastPlayedDate || '';
@@ -55,12 +56,12 @@ const ClearUpSpace: React.FC = () => {
           const seriesId = item.SeriesId;
           itemCount[seriesId].views += views;
           if (!itemCount[seriesId].lastPlayedDate || new Date(lastPlayedDate) > new Date(itemCount[seriesId].lastPlayedDate)) {
-        itemCount[seriesId].lastPlayedDate = lastPlayedDate;
+            itemCount[seriesId].lastPlayedDate = lastPlayedDate;
           }
         } else {
           itemCount[item.Id].views += views;
           if (!itemCount[item.Id].lastPlayedDate || new Date(lastPlayedDate) > new Date(itemCount[item.Id].lastPlayedDate)) {
-        itemCount[item.Id].lastPlayedDate = lastPlayedDate;
+            itemCount[item.Id].lastPlayedDate = lastPlayedDate;
           }
         }
       });
@@ -97,11 +98,9 @@ const ClearUpSpace: React.FC = () => {
   }, [watchedItems, desiredSpace]);
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
-      <Typography variant="h6" align="center">Clear Up Space</Typography>
-
-      <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center' }}>
+      <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center', position: 'relative' }}>
         <DesiredSpaceInput desiredSpace={desiredSpace} setDesiredSpace={setDesiredSpace} />
         <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
           Get items
@@ -111,11 +110,15 @@ const ClearUpSpace: React.FC = () => {
           {filteredItems.length} items selected for deletion, total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
         </Typography>
         <DeleteMediaButton filteredItems={filteredItems} setWatchedItems={setWatchedItems} />
-
+        <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
+          <IconButton>
+            <HelpIcon />
+          </IconButton>
+        </Tooltip>
       </Stack>
       {loading && <LinearProgress />}
       <ClearUpSpaceTable filteredItems={filteredItems} setWatchedItems={setWatchedItems} />
-    </div>
+    </Box>
   );
 };
 

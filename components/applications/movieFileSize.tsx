@@ -3,8 +3,9 @@ import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/contexts/apiContexts';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import { Item, ItemResponse } from '@/utils/types';
-import { Box, LinearProgress } from '@mui/material';
+import { Box, IconButton, LinearProgress, Tooltip } from '@mui/material';
 import CheckAPIKeys from '@/components/checkAPIkeys';
+import HelpIcon from '@mui/icons-material/Help';
 
 const MovieFileSize: React.FC = () => {
   const [fileSizes, setFileSizes] = useState<Item[]>([]);
@@ -40,8 +41,13 @@ const MovieFileSize: React.FC = () => {
   const handleCloseAPIKeyDialog = () => setShowAPIKeyDialog(false);
 
   return (
-    <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
+    <Box sx={{ maxHeight: '400px', overflowY: 'auto', position: 'relative' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
+      <Tooltip title="This will get the file sizes of all movies in your jellyfin library.">
+        <IconButton style={{ position: 'absolute', top: 0, right: 0 }}>
+          <HelpIcon />
+        </IconButton>
+      </Tooltip>
       <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
         Get Movie File Sizes
       </Button>
