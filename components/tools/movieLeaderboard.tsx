@@ -26,11 +26,11 @@ const MovieLeaderboard: React.FC = () => {
       setLoading(false);
       return;
     }
-    const users = await jellyfin.makeRequest("GET", "users");
+    const users = await jellyfin.getUsers();
     const movieCount: { [key: string]: number } = {};
 
     for (const user of users) {
-      const watched = await jellyfin.makeRequest("GET", `users/${user.Id}/items?IncludeItemTypes=Movie&Recursive=true&Filters=IsPlayed`);
+      const watched = await jellyfin.getWatchedMovies(user.Id);
       watched.Items.forEach((item: ItemResponse) => {
         const count = sortMethod === 'played' ? 1 : item.UserData.PlayCount || 0;
         if (movieCount[item.Name]) {

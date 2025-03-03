@@ -63,6 +63,7 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
         return { success: false, message: 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
       }
     } catch (error) {
+      console.error("Error authenticating with Jellyseer:", error);
       if (error == "HTTP error! status: 404") {
         return { success: false, message: 'Failed to authenticate with Jellyseer. Please check your endpoint URL' };
       } else if (error == "HTTP error! status: 401") {
@@ -114,7 +115,6 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
   };
 
   const getTestButtonIcon = () => {
-    console.log("Current test result: ", testResult);
     if (loading) {
       return <CircularProgress size={20} />;
     }

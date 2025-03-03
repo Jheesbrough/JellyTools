@@ -30,12 +30,12 @@ const ClearUpSpace: React.FC = () => {
       setLoading(false);
       return;
     }
-    const users = await jellyfin.makeRequest("GET", "users");
+    const users = await jellyfin.getUsers();
 
     const itemCount: { [key: string]: { type: string; name: string; views: number; size: number; lastPlayedDate: string; dateCreated: string } } = {};
 
     // Make a single request for Items of type Movie or Series to set all views to 0 and get total size
-    const allItems = await jellyfin.makeRequest("GET", "Items", { IncludeItemTypes: "Movie,Series,Episode", Recursive: "true", Fields: "MediaSources,SeriesId,SeriesName,DateCreated" });
+    const allItems = await jellyfin.getAllItems();
     allItems.Items.forEach((item: ItemResponse) => {
       const size = item.MediaSources?.[0]?.Size || 0;
       const dateCreated = item.DateCreated || '';
@@ -52,7 +52,7 @@ const ClearUpSpace: React.FC = () => {
     });
 
     for (const user of users) {
-      const watchedItems = await jellyfin.makeRequest("GET", `users/${user.Id}/items`, { IncludeItemTypes: "Movie,Episode", Recursive: "true", Fields: "UserData,SeriesId,LastPlayedDate", Filters: "IsPlayed" });
+      const watchedItems = await jellyfin.getAllWatchedItems(user.Id);
       watchedItems.Items.forEach((item: ItemResponse) => {
         const views = item.UserData?.PlayCount || 0;
         const lastPlayedDate = item.UserData.LastPlayedDate || '';

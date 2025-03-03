@@ -1,5 +1,6 @@
 "use client";
 import SwaggerAgent from './swaggerAgent';
+import axios from 'axios';
 
 /**
  * Jellyseer class extends SwaggerAgent to interact with Jellyfin API.
@@ -27,8 +28,19 @@ export default class Jellyseer extends SwaggerAgent {
    */
   setup() {
     this.headerType = "X-Api-Key";
-    this.authEndpoint = "settings/about";
     this.setBaseURL(this.baseURL);
+  }
+
+  async getMedia(): Promise<any> {
+    return await this.sendRequest("GET", "media");
+  }
+
+  async validate(): Promise<any> {
+    const res = await this.sendRequest("GET", "validate");
+    if (res.message === "API is valid") {
+      this.authorised = true;
+    }
+    return res;
   }
 
   /**
@@ -37,8 +49,9 @@ export default class Jellyseer extends SwaggerAgent {
    * @returns A promise that resolves when the item is deleted.
    */
   async deleteItem(jellyfinItemId: string): Promise<void> {
-    let res = await this.makeRequest("GET", "media");
-    const filteredMedia = res.data.results.filter(
+    let res = await this.getMedia();
+
+    const filteredMedia = res.results.filter(
       (item: { jellyfinMediaId: string | null; }) => item.jellyfinMediaId === jellyfinItemId
     );
     if (filteredMedia.length === 0) {
@@ -47,17 +60,17 @@ export default class Jellyseer extends SwaggerAgent {
 
     const id = filteredMedia[0].id;
 
-    res = await this.makeRequest("GET", `requests`);
-    const filteredRequests = res.data.results.filter(
+    res = await this.sendRequest("GET", `requests`);
+    const filteredRequests = res.results.filter(
       (item: { id: string | null; }) => item.id === id
     );
 
     if (filteredRequests.length !== 0) {
-      await this.makeRequest("DELETE", `requests/${filteredRequests[0].id}`);
+      await this.sendRequest("DELETE", `/api/requests/${filteredRequests[0].id}`);
     }
 
-    await this.makeRequest("DELETE", `media/${id}`);
-    await this.makeRequest("DELETE", `media/${id}/file`);
+    await this.sendRequest("DELETE", `/api/media/${id}`);
+    await this.sendRequest("DELETE", `/api/media/${id}/file`);
   }
 
   /**
@@ -73,7 +86,7 @@ export default class Jellyseer extends SwaggerAgent {
 
     // Fetch all media items with pagination using take and skip
     do {
-      res = await this.makeRequest("GET", "media", { filter: "available", take: take.toString(), skip: skip.toString() });
+      res = await this.sendRequest("GET", "media", { filter: "available", take: take.toString(), skip: skip.toString() });
       allMedia = allMedia.concat(res.results);
       skip += take;
     } while (res.results.length === take);
@@ -93,7 +106,7 @@ export default class Jellyseer extends SwaggerAgent {
 
     // Fetch all requests with pagination using take and skip
     do {
-      res = await this.makeRequest("GET", `request`, { take: take.toString(), skip: skip.toString() });
+      res = await this.sendRequest("GET", `request`, { take: take.toString(), skip: skip.toString() });
       allRequests = allRequests.concat(res.results);
       skip += take;
     } while (res.results.length === take);
@@ -103,12 +116,47 @@ export default class Jellyseer extends SwaggerAgent {
     );
 
     for (const request of filteredRequests) {
-      await this.makeRequest("DELETE", `request/${request.id}`);
+      await this.sendRequest("DELETE", `/api/requests/${request.id}`);
     }
 
     for (const id of mediaIds) {
-      await this.makeRequest("DELETE", `media/${id}/file`);
-      await this.makeRequest("DELETE", `media/${id}`);
+      await this.sendRequest("DELETE", `/api/media/${id}/file`);
+      await this.sendRequest("DELETE", `/api/media/${id}`);
+    }
+  }
+
+  private async sendRequest(method: string, endpoint: string, data: any = null): Promise<any> {
+    console.log(`Sending ${method} request to ${endpoint}`);
+    // Add the baseURL to data
+    if (data) {
+      data.baseurl = this.baseURL;
+    } else {
+      data = { baseurl: this.baseURL };
+    }
+    const url = `api/jellyseer/${endpoint}`;
+
+    try {
+      const response = await axios({
+        method: method,
+        url: url,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': this.apiKey
+        },
+        params: data
+      });
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(`HTTP error! status: ${error.response?.status}`);
+      } else {
+        if (error instanceof Error) {
+          throw new Error(`Unexpected error: ${error.message}`);
+        } else {
+          throw new Error('Unexpected error');
+        }
+      }
     }
   }
 }

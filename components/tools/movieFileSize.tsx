@@ -20,7 +20,7 @@ const MovieFileSize: React.FC = () => {
       setLoading(false);
       return;
     }
-    const response = await jellyfin.makeRequest("GET", "Items", { IncludeItemTypes: "Movie", Recursive: "true", Fields: "MediaSources" });
+    const response = await jellyfin.getMovies();
 
     const sortedItems = response.Items
       .map((item: ItemResponse) => ({
