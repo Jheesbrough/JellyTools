@@ -1,6 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
-import { makeRequest, extractApiKey, handleApiResponse } from '../../utils/requestHelper';
+import { makeRequest, handleApiResponse } from '../../utils/requestHelper';
+import { headers } from 'next/headers';
+
+async function getBaseURLAndApiKey(request: NextApiRequest) {
+  if (!request.url) { throw new Error('Invalid request URL'); }
+  const { searchParams } = new URL(request.url);
+  const baseURL = searchParams.get('baseurl');
+  searchParams.delete('baseurl');
+  const apiKey = (await headers()).get('X-Api-Key');
+
+  if (!baseURL || !apiKey) { throw new Error('Missing baseURL or API key'); }
+
+  return { baseURL, apiKey, searchParams };
+}
 
 export async function GET(request: NextApiRequest, response: NextApiResponse) {
   const { pid } = request.query;
@@ -9,29 +22,35 @@ export async function GET(request: NextApiRequest, response: NextApiResponse) {
     return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
   }
 
-  return NextResponse.json({ message: `Post: ${pid}` }, { status: 200 });
+  try {
+    const { baseURL, apiKey } = await getBaseURLAndApiKey(request);
+    const url = new URL(`${baseURL}/api/v1/media/${pid}`);
+    const apiResponse = await makeRequest('get', url, apiKey);
+    return handleApiResponse(apiResponse, response);
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+  }
 }
 
 export async function DELETE(request: NextApiRequest, response: NextApiResponse) {
   const { pid } = request.query;
-  const baseURL = request.headers['baseurl'];
-  const apiKey = extractApiKey(request.headers);
 
   if (!pid) {
     return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
   }
 
-  if (!baseURL || !apiKey) {
-    return NextResponse.json({ error: 'Missing baseURL or API key' }, { status: 400 });
-  }
-
-  const url = new URL(`${baseURL}/api/v1/media/${pid}`);
-
   try {
-    const apiResponse = await makeRequest('delete', url.toString(), apiKey);
+    const { baseURL, apiKey } = await getBaseURLAndApiKey(request);
+    const url = new URL(`${baseURL}/api/v1/media/${pid}`);
+    const apiResponse = await makeRequest('delete', url, apiKey);
     return handleApiResponse(apiResponse, response);
   } catch (error) {
-    console.log("Error making request to URL:", url.toString(), "Error:", error);
-    return NextResponse.json({ error: 'Error making request' }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
   }
 }

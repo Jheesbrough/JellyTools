@@ -2,7 +2,15 @@ import axios from 'axios';
 import { NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 
-export async function makeRequest(method: 'get' | 'delete', url: string, apiKey: string) {
+function validateHttpUrl(url: URL) {
+  if (!url.protocol.startsWith('http') && !url.protocol.startsWith('https')) {
+    throw new Error('Invalid URL protocol');
+  }
+}
+
+export async function makeRequest(method: 'get' | 'delete', url: URL, apiKey: string) {
+  validateHttpUrl(url);
+
   const headers = {
     "Content-Type": "application/json",
     "X-Api-Key": apiKey,
@@ -10,7 +18,7 @@ export async function makeRequest(method: 'get' | 'delete', url: string, apiKey:
 
   return axios({
     method: method,
-    url: url,
+    url: url.toString(),
     headers: headers,
     timeout: 10000,
     validateStatus: function (status: number) {
