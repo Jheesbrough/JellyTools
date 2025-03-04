@@ -20,11 +20,14 @@ export default class Jellyseer extends SwaggerAgent {
   }
 
   async validate(): Promise<any> {
-    const res = await this.sendRequest("GET", "validate");
-    if (res.message === "API is valid") {
+    try {
+      const res = await this.sendRequest("GET", "settings/about");
+      console.log(res);
       this.authorised = true;
+    } catch (error) {
+      console.error("Error validating Jellyseer", error);
+      this.authorised = false;
     }
-    return res;
   }
 
   /**
