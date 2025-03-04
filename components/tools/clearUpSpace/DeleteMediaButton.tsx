@@ -4,12 +4,13 @@ import { Item } from '@/utils/types';
 import { useJellyseer, useJellyfin } from '@/utils/contexts/apiContexts';
 
 interface DeleteMediaButtonProps {
+  clearItems: () => void;
   filteredItems: Item[];
   setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>>;
   deleteMethod: 'jellyfin' | 'jellyseer';
 }
 
-const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ filteredItems, setWatchedItems, deleteMethod }) => {
+const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filteredItems, setWatchedItems, deleteMethod }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cooldown, setCooldown] = useState(5);
@@ -41,6 +42,7 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ filteredItems, se
     } else {
       await jellyseer.deleteItems(itemIds);
     }
+    clearItems();
     setConfirmOpen(false);
     setOpen(false);
   };

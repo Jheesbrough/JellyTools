@@ -13,7 +13,6 @@ import SettingsDialog from './clearUpSpace/SettingsDialog';
 
 const ClearUpSpace: React.FC = () => {
 
-
   const [watchedItems, setWatchedItems] = useState<Item[]>([]);
   const [desiredSpace, setDesiredSpace] = useState<number>(0);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
@@ -22,6 +21,10 @@ const ClearUpSpace: React.FC = () => {
   const [deleteMethod, setDeleteMethod] = useState<'jellyfin' | 'jellyseer'>('jellyfin');
   const [showSettingsDialog, setShowSettingsDialog] = useState<boolean>(false);
   const jellyfin = useJellyfin();
+
+  const clearItems = () => {
+    setFilteredItems([]);
+  }
 
   const handleButtonClick = async () => {
     setLoading(true);
@@ -116,7 +119,7 @@ const ClearUpSpace: React.FC = () => {
         <Typography variant="body1">
           {filteredItems.length} items selected for deletion, total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
         </Typography>
-        <DeleteMediaButton filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} />
+        <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} />
         <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
           <IconButton>
             <HelpIcon />

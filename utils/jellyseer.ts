@@ -28,35 +28,6 @@ export default class Jellyseer extends SwaggerAgent {
   }
 
   /**
-   * Deletes a media item and its associated requests from Jellyfin.
-   * @param jellyfinItemId - The ID of the Jellyfin item to delete.
-   * @returns A promise that resolves when the item is deleted.
-   */
-  async deleteItem(jellyfinItemId: string): Promise<void> {
-    let res = await this.getMedia();
-    const filteredMedia = res.results.filter(
-      (item: { jellyfinMediaId: string | null; }) => item.jellyfinMediaId === jellyfinItemId
-    );
-    if (filteredMedia.length === 0) {
-      return;
-    }
-
-    const id = filteredMedia[0].id;
-
-    res = await this.sendRequest("GET", `requests`);
-    const filteredRequests = res.results.filter(
-      (item: { id: string | null; }) => item.id === id
-    );
-
-    if (filteredRequests.length !== 0) {
-      await this.sendRequest("DELETE", `requests/${filteredRequests[0].id}`);
-    }
-
-    await this.sendRequest("DELETE", `media/${id}/file`);
-    await this.sendRequest("DELETE", `media/${id}`);
-  }
-
-  /**
    * Deletes multiple media items and their associated requests from Jellyfin.
    * @param jellyfinItemIds - An array of Jellyfin item IDs to delete.
    * @returns A promise that resolves when all items are deleted.
@@ -64,22 +35,24 @@ export default class Jellyseer extends SwaggerAgent {
   async deleteItems(jellyfinItemIds: string[]): Promise<void> {
     let skip = 0;
     const take = 100;
-    let allMedia: any[] = [];
+    let allMedia: { jellyfinMediaId: string | null; id: string; }[] = [];
     let res;
 
     // Fetch all media items with pagination using take and skip
     do {
-      res = await this.sendRequest("GET", "media", { filter: "available", take: take.toString(), skip: skip.toString() });
-      console.log(res);
-      allMedia = allMedia.concat(res.results);
+      res = await this.sendRequest("GET", "media", { take: take.toString(), skip: skip.toString() });
+      allMedia = allMedia.concat(res.results as { jellyfinMediaId: string | null; id: string; }[]);
       skip += take;
     } while (res.results.length === take);
 
+    // Filter media items to only include those with a Jellyfin ID given in jellyfinItemIds
     const filteredMedia = allMedia.filter(
-      (item: { jellyfinMediaId: string | null; }) => item.jellyfinMediaId !== null && jellyfinItemIds.includes(item.jellyfinMediaId)
+      (item) => item.jellyfinMediaId !== null && jellyfinItemIds.includes(item.jellyfinMediaId)
     );
 
+
     if (filteredMedia.length === 0) {
+      console.log("No media found");
       return;
     }
 
@@ -104,7 +77,11 @@ export default class Jellyseer extends SwaggerAgent {
     }
 
     for (const id of mediaIds) {
-      await this.sendRequest("DELETE", `/media/${id}/file`);
+      try {
+        await this.sendRequest("DELETE", `/media/${id}/file`);
+      } catch (error) {
+        console.warn(`No file found for media ID ${id}, skipping file deletion.`);
+      }
       await this.sendRequest("DELETE", `/media/${id}`);
     }
   }

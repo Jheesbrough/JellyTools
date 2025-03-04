@@ -142,11 +142,11 @@ export default class Jellyfin extends SwaggerAgent {
       });
 
       if (response.ok) {
-        return await response.json();
+        return true;
       }
     } catch (error) {
       console.log(`Error deleting data from ${endpoint}:`, error);
     }
-    return null;
+    return false;
   }
 }

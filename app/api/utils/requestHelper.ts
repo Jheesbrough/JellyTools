@@ -28,9 +28,17 @@ export async function makeRequest(method: 'get' | 'delete', url: URL, apiKey: st
       maxRedirects: 5,
     });
 
+    if (apiResponse.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
     const responseData = apiResponse.data || {};
     return NextResponse.json(responseData, { status: apiResponse.status });
   } catch (error) {
-    return NextResponse.json({ error: 'Error making request' }, { status: 500 });
+    if (axios.isAxiosError(error)) {
+      console.log('Error making request:', error.message, error.response?.data);
+    } else {
+      console.log('Unexpected error:', error);
+    }
+    return NextResponse.json({ error: 'Alternative error occurred' }, { status: 500 });
   }
 }
