@@ -1,4 +1,5 @@
 "use client";
+import{ APIresponse } from '@/utils/types';
 
 export default class SwaggerAgent {
   protected apiKey: string;
@@ -26,8 +27,8 @@ export default class SwaggerAgent {
     return;
   }
 
-  async validate() {
-    return;
+  async validate(): Promise<APIresponse> {
+    return { success: false, data: null, error: "Not implemented" };
   }
 
 

@@ -1,5 +1,6 @@
 "use client";
 import SwaggerAgent from '@/utils/swaggerAgent';
+import { APIresponse } from '@/utils/types';
 
 /**
  * Jellyfin class extends SwaggerAgent to interact with Jellyfin API.
@@ -100,19 +101,20 @@ export default class Jellyfin extends SwaggerAgent {
 
   /**
    * Validates the API key by fetching system info.
-   * @returns {Promise<void>} - A promise that resolves when validation is complete.
+   * @returns {Promise<FetchResult>} - A promise that resolves to the fetched validation result.
    */
-  async validate(): Promise<void> {
-    const data = await this.fetchData('/system/info');
-    this.authorised = data !== null;
+  async validate(): Promise<APIresponse> {
+    const response = await this.fetchData('/system/info');
+    this.authorised = response.success;
+    return response;
   }
 
   /**
    * Fetches data from a given endpoint.
    * @param {string} endpoint - The API endpoint to fetch data from.
-   * @returns {Promise<any>} - A promise that resolves to the fetched data.
+   * @returns {Promise<FetchResult>} - A promise that resolves to the fetched data.
    */
-  private async fetchData(endpoint: string) {
+  private async fetchData(endpoint: string): Promise<APIresponse> {
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         method: 'GET',
@@ -123,12 +125,22 @@ export default class Jellyfin extends SwaggerAgent {
       });
 
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        return { success: true, data, error: null };
+      } else if (response.status === 404) {
+        return { success: false, data: null, error: 'Could not find the requested resource' };
+      } else if (response.status === 401) {
+        return { success: false, data: null, error: 'Invalid API key' };
+      } else if (response.status === 500) {
+        return { success: false, data: null, error: 'Internal server error' };
+      } else {
+        const error = await response.text();
+        return { success: false, data: null, error };
       }
     } catch (error) {
       console.log(`Error fetching data from ${endpoint}:`, error);
+      return { success: false, data: null, error: (error as Error).message };
     }
-    return null;
   }
 
   private async deleteData(endpoint: string) {

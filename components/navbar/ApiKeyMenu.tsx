@@ -33,21 +33,14 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
     jellyfin.setApiKey(apiKey);
 
     try {
-      await jellyfin.validate();
-      if (jellyfin.authorised) {
+      const result = await jellyfin.validate();
+      if (result.success) {
         return { success: true };
-      }
-      else {
-        return { success: false, message: 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
+      } else {
+        return { success: false, message: result.error || 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
       }
     } catch (error) {
-      if (error == "HTTP error! status: 404") {
-        return { success: false, message: 'Failed to authenticate with Jellyfin. Please check your endpoint URL' };
-      } else if (error == "HTTP error! status: 401") {
-        return { success: false, message: 'Failed to authenticate with Jellyfin. Invalid API key.' };
-      } else {
-        return { success: false, message: 'An unknown error occurred.' };
-      }
+      return { success: false, message: 'An unknown error occurred.' };
     }
   };
 
@@ -56,21 +49,15 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
     jellyseer.setApiKey(apiKey);
 
     try {
-      await jellyseer.validate();
-      if (jellyseer.authorised) {
+      const result = await jellyseer.validate();
+      if (result.success) {
         return { success: true };
       } else {
-        return { success: false, message: 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
+        return { success: false, message: result.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
       }
     } catch (error) {
       console.error("Error authenticating with Jellyseer:", error);
-      if (error == "HTTP error! status: 404") {
-        return { success: false, message: 'Failed to authenticate with Jellyseer. Please check your endpoint URL' };
-      } else if (error == "HTTP error! status: 401") {
-        return { success: false, message: 'Failed to authenticate with Jellyseer. Invalid API key.' };
-      } else {
-        return { success: false, message: 'An unknown error occurred.' };
-      }
+      return { success: false, message: 'An unknown error occurred.' };
     }
   };
 
