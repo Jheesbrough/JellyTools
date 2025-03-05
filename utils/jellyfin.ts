@@ -1,6 +1,7 @@
 "use client";
 import SwaggerAgent from '@/utils/swaggerAgent';
 import { APIresponse } from '@/utils/types';
+import { makeAxiosRequest } from '@/utils/axiosUtil';
 
 /**
  * Jellyfin class extends SwaggerAgent to interact with Jellyfin API.
@@ -110,55 +111,21 @@ export default class Jellyfin extends SwaggerAgent {
   }
 
   /**
-   * Fetches data from a given endpoint.
-   * @param {string} endpoint - The API endpoint to fetch data from.
-   * @returns {Promise<FetchResult>} - A promise that resolves to the fetched data.
+   * Makes an Axios request to the given endpoint.
+   * @param {string} endpoint - The API endpoint.
+   * @param {string} method - The HTTP method (GET, DELETE, etc.).
+   * @returns {Promise<APIresponse>} - A promise that resolves to the response data.
    */
-  private async fetchData(endpoint: string): Promise<APIresponse> {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': this.apiKey,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return { success: true, data, error: null };
-      } else if (response.status === 404) {
-        return { success: false, data: null, error: 'Could not find the requested resource' };
-      } else if (response.status === 401) {
-        return { success: false, data: null, error: 'Invalid API key' };
-      } else if (response.status === 500) {
-        return { success: false, data: null, error: 'Internal server error' };
-      } else {
-        const error = await response.text();
-        return { success: false, data: null, error };
-      }
-    } catch (error) {
-      console.log(`Error fetching data from ${endpoint}:`, error);
-      return { success: false, data: null, error: (error as Error).message };
-    }
+  private async makeAxiosRequest(endpoint: string, method: 'get' | 'delete'): Promise<APIresponse> {
+    return makeAxiosRequest(new URL(endpoint, this.baseURL), method, { 'Authorization': this.apiKey });
   }
 
-  private async deleteData(endpoint: string) {
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': this.apiKey,
-        },
-      });
+  // Update fetchData and deleteData to use makeAxiosRequest
+  private async fetchData(endpoint: string): Promise<APIresponse> {
+    return this.makeAxiosRequest(endpoint, 'get');
+  }
 
-      if (response.ok) {
-        return true;
-      }
-    } catch (error) {
-      console.log(`Error deleting data from ${endpoint}:`, error);
-    }
-    return false;
+  private async deleteData(endpoint: string): Promise<APIresponse> {
+    return this.makeAxiosRequest(endpoint, 'delete');
   }
 }

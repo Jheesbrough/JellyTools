@@ -20,6 +20,6 @@ export interface ItemResponse {
 
 export type APIresponse = {
   success: boolean;
-  data: any;
-  error: string | null;
+  data?: any;
+  error?: string;
 };

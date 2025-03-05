@@ -56,7 +56,6 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
         return { success: false, message: result.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
       }
     } catch (error) {
-      console.error("Error authenticating with Jellyseer:", error);
       return { success: false, message: 'An unknown error occurred.' };
     }
   };

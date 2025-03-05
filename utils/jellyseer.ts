@@ -1,6 +1,7 @@
 "use client";
 import SwaggerAgent from './swaggerAgent';
 import axios from 'axios';
+import { APIresponse } from '@/utils/types';
 
 /**
  * Jellyseer class extends SwaggerAgent to interact with Jellyfin API.
@@ -19,14 +20,19 @@ export default class Jellyseer extends SwaggerAgent {
     return await this.sendRequest("GET", "media");
   }
 
-  async validate(): Promise<any> {
+  async validate(): Promise<APIresponse> {
     try {
       const res = await this.sendRequest("GET", "settings/about");
-      console.log(res);
-      this.authorised = true;
+      if (res.success) {
+        this.authorised = true;
+        return { success: true };
+      } else {
+        this.authorised = false;
+        return { success: false, error: res.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
+      }
     } catch (error) {
-      console.error("Error validating Jellyseer", error);
       this.authorised = false;
+      return { success: false, error: 'An unknown error occurred.' };
     }
   }
 
@@ -53,9 +59,7 @@ export default class Jellyseer extends SwaggerAgent {
       (item) => item.jellyfinMediaId !== null && jellyfinItemIds.includes(item.jellyfinMediaId)
     );
 
-
     if (filteredMedia.length === 0) {
-      console.log("No media found");
       return;
     }
 
@@ -83,14 +87,12 @@ export default class Jellyseer extends SwaggerAgent {
       try {
         await this.sendRequest("DELETE", `/media/${id}/file`);
       } catch (error) {
-        console.warn(`No file found for media ID ${id}, skipping file deletion.`);
       }
       await this.sendRequest("DELETE", `/media/${id}`);
     }
   }
 
   private async sendRequest(method: string, endpoint: string, data: any = null): Promise<any> {
-    console.log(`Sending ${method} request to ${endpoint}`);
     // Add the baseURL to data
     if (data) {
       data.baseurl = this.baseURL;
@@ -113,9 +115,7 @@ export default class Jellyseer extends SwaggerAgent {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error(`Error sending ${method} request to ${endpoint}`, error.message);
       } else {
-        console.error(`Error sending ${method} request to ${endpoint}`, error);
       }
       throw new Error('Error making request');
     }
