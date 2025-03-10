@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-import { useJellyfin } from '@/utils/contexts/apiContexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 import { SelectChangeEvent, Stack, LinearProgress, Typography, Box, Tooltip, IconButton } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';

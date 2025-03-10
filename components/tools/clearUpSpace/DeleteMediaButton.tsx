@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import { Item } from '@/utils/types';
-import { useJellyseer, useJellyfin } from '@/utils/contexts/apiContexts';
 
 interface DeleteMediaButtonProps {
   clearItems: () => void;

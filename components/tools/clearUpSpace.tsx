@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useJellyfin } from '@/utils/contexts/apiContexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 import { Button, Stack, Typography, LinearProgress, Box, Tooltip, IconButton } from '@mui/material';
 import ClearUpSpaceTable from './clearUpSpace/ClearUpSpaceTable';
 import DesiredSpaceInput from './clearUpSpace/DesiredSpaceInput';

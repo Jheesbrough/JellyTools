@@ -11,8 +11,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import React, { useState } from 'react';
-import { useJellyfin, useJellyseer } from '../../utils/contexts/apiContexts';
+import React, { useState, useContext } from 'react';
+import { JellyfinContext, JellyseerContext } from '@/utils/contexts/contexts';
 
 interface ApiKeyMenuProps {
   isDialogOpen: boolean;
@@ -20,8 +20,8 @@ interface ApiKeyMenuProps {
 }
 
 const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) => {
-  const jellyfin = useJellyfin();
-  const jellyseer = useJellyseer();
+  const jellyfin = useContext(JellyfinContext);
+  const jellyseer = useContext(JellyseerContext);
   const [currentApp, setCurrentApp] = useState<string | null>(null);
   const [endpoint, setEndpoint] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -29,34 +29,36 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
   const [loading, setLoading] = useState(false);
 
   const authenticateWithJellyfin = async (endpoint: string, apiKey: string) => {
-    jellyfin.setBaseURL(endpoint);
-    jellyfin.setApiKey(apiKey);
+    if (jellyfin) {
+      jellyfin.setJellyfinConfig({ baseURL: endpoint, apiKey });
 
-    try {
-      const result = await jellyfin.validate();
-      if (result.success) {
-        return { success: true };
-      } else {
-        return { success: false, message: result.error || 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
+      try {
+        const result = await jellyfin.jellyfinInstance?.validate();
+        if (result?.success) {
+          return { success: true };
+        } else {
+          return { success: false, message: result?.error || 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
+        }
+      } catch (error) {
+        return { success: false, message: 'An unknown error occurred.' };
       }
-    } catch (error) {
-      return { success: false, message: 'An unknown error occurred.' };
     }
   };
 
   const authenticateWithJellyseer = async (endpoint: string, apiKey: string) => {
-    jellyseer.setBaseURL(endpoint);
-    jellyseer.setApiKey(apiKey);
+    if (jellyseer) {
+      jellyseer.setJellyseerConfig({ baseURL: endpoint, apiKey });
 
-    try {
-      const result = await jellyseer.validate();
-      if (result.success) {
-        return { success: true };
-      } else {
-        return { success: false, message: result.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
+      try {
+        const result = await jellyseer.jellyseerInstance?.validate();
+        if (result?.success) {
+          return { success: true };
+        } else {
+          return { success: false, message: result?.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
+        }
+      } catch (error) {
+        return { success: false, message: 'An unknown error occurred.' };
       }
-    } catch (error) {
-      return { success: false, message: 'An unknown error occurred.' };
     }
   };
 
@@ -78,9 +80,15 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
       setLoading(true);
       let result: { success: boolean; message?: string } | null = null;
       if (currentApp === 'jellyfin') {
-        result = await authenticateWithJellyfin(endpoint, apiKey);
+        result = (await authenticateWithJellyfin(endpoint, apiKey)) || { success: false, message: 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
+        if (result.success) {
+          jellyfin?.setJellyfinAuthorised(true);
+        }
       } else if (currentApp === 'jellyseer') {
-        result = await authenticateWithJellyseer(endpoint, apiKey);
+        result = (await authenticateWithJellyseer(endpoint, apiKey)) || { success: false, message: 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
+        if (result.success) {
+          jellyseer?.setJellyseerAuthorised(true);
+        }
       }
       if (result) {
         setTestResult(result);
@@ -111,7 +119,7 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
   };
 
   const renderMenuItem = (id: string, label: string) => {
-    const isAuthorized = id === 'jellyfin' ? jellyfin.authorised : jellyseer.authorised;
+    const isAuthorized = id === 'jellyfin' ? jellyfin?.jellyfinAuthorised : jellyseer?.jellyseerAuthorised;
     return (
       <MenuItem key={id} onClick={() => handleDialogOpen(id)}>
         {isAuthorized ? (
