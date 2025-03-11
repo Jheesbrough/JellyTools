@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { APIresponse } from '@/utils/types';
-import { makeAxiosRequest } from '@/utils/axiosUtil';
+import { sendAxiosJellyRequest } from '@/utils/axiosUtil';
 
 async function getBaseURLAndApiKey(request: NextApiRequest) {
   if (!request.url) { throw new Error('Invalid request URL'); }
@@ -62,6 +62,6 @@ function validateHttpUrl(url: URL) {
 export async function makeRequest(method: 'get' | 'delete', url: URL, apiKey: string) {
   validateHttpUrl(url);
 
-  const response = await makeAxiosRequest(url, method, { 'X-Api-Key': apiKey });
+  const response = await sendAxiosJellyRequest(url, method, { 'X-Api-Key': apiKey });
   return NextResponse.json(response, { status: 200 });
 }
