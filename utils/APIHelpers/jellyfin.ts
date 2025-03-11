@@ -12,6 +12,14 @@ export default function createJellyfin(baseURL: string, apiKey: string) {
   const TESTING_ENDPOINT = '/system/info';
 
   const testEndpoint = async (baseURL: string, apiKey: string): Promise<APIresponse> => {
+    // Ensure that the string given is a valid URL that can be parsed
+    try {
+      new URL(baseURL);
+    } catch (error) {
+      return { success: false, error: 'Invalid URL' };
+    }
+
+
     return sendAxiosJellyRequest(new URL(TESTING_ENDPOINT, baseURL), 'get', { Authorization: `Mediabrowser Token="${apiKey}"` });
   };
 

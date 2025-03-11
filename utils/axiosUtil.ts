@@ -9,6 +9,12 @@ import { APIresponse } from '@/utils/types';
  * @returns {Promise<APIresponse>} - A promise that resolves to the response data.
  */
 export async function sendAxiosJellyRequest(url: URL, method: 'get' | 'delete', headers: Record<string, string>): Promise<APIresponse> {
+
+  // Check if the URL protocol is valid
+  if (!url.protocol.startsWith('http') && !url.protocol.startsWith('https')) {
+    return { success: false, error: 'Invalid URL protocol' };
+  }
+
   try {
     const response = await axios({
       method: method,
@@ -55,7 +61,7 @@ export async function sendAxiosJellyRequest(url: URL, method: 'get' | 'delete', 
         if (error.code === 'ECONNABORTED') {
           return { success: false, error: 'Request timed out' };
         }
-        else if (error.code === 'ENOTFOUND') {
+        else if (error.code === 'ENOTFOUND' || error.code === 'ERR_NETWORK') {
           return { success: false, error: 'Could not find the requested resource, please check the URL' };
         }
       }
