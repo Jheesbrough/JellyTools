@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
-import { useJellyfin } from '@/utils/contexts/apiContexts';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import { Item, ItemResponse } from '@/utils/types';
 import { Box, IconButton, LinearProgress, Tooltip } from '@mui/material';
 import CheckAPIKeys from '@/components/checkAPIkeys';
 import HelpIcon from '@mui/icons-material/Help';
+import { JellyfinContext } from '@/utils/contexts/contexts';
 
 const MovieFileSize: React.FC = () => {
   const [fileSizes, setFileSizes] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
-  const jellyfin = useJellyfin();
+  const jellyfin = useContext(JellyfinContext);
 
   const handleButtonClick = async () => {
     setLoading(true);
-    if (!jellyfin.authorised) {
+    if (!jellyfin || jellyfin.authenticationStatus !== 'true') {
       setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
-    const response = await jellyfin.makeRequest("GET", "Items", { IncludeItemTypes: "Movie", Recursive: "true", Fields: "MediaSources" });
+    const response = (await jellyfin.instance.getMovies()).data;
 
     const sortedItems = response.Items
       .map((item: ItemResponse) => ({

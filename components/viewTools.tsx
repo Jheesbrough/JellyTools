@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Paper, Modal, Typography, Fade, Chip } from '@mui/material';
 import Grid from "@mui/material/Grid2";
-import { applications } from './applicationsList';
+import { tools } from './toolsList';
 
 interface ModalStyle {
   top: number;
@@ -11,7 +11,7 @@ interface ModalStyle {
   height: number;
 }
 
-const ViewApplications = () => {
+const ViewTools = () => {
   const [open, setOpen] = useState(false);
   const [modalContent, setModalContent] = useState<React.ReactNode | null>(null);
   const [modalStyle, setModalStyle] = useState<ModalStyle>({ top: 0, left: 0, width: 0, height: 0 });
@@ -70,19 +70,19 @@ const ViewApplications = () => {
     animateModalSize(modalStyle, initialModalStyle, 300, () => setOpen(false));
   };
 
-  const squares = applications.map((application, index) => (
+  const squares = tools.map((tool, index) => (
     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
       <Paper
         ref={el => { paperRefs.current[index] = el; }}
         style={{ height: 250, padding: 16, cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-        onClick={() => handleOpen(application.content, index)}
+        onClick={() => handleOpen(tool.content, index)}
       >
         <div>
-          <Typography variant="h6">{application.title}</Typography>
-          <Typography variant="body1">{application.description}</Typography>
+          <Typography variant="h6">{tool.title}</Typography>
+          <Typography variant="body1">{tool.description}</Typography>
         </div>
         <div>
-          {application.tags.map((tag, tagIndex) => (
+          {tool.tags.map((tag, tagIndex) => (
         <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
           ))}
         </div>
@@ -118,4 +118,4 @@ const ViewApplications = () => {
   );
 };
 
-export default ViewApplications;
+export default ViewTools;

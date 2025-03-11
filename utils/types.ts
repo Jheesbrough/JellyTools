@@ -17,3 +17,9 @@ export interface ItemResponse {
     SeriesName: string;
     MediaSources: {Size: number}[];
 }
+
+export type APIresponse = {
+  success: boolean;
+  data?: any;
+  error?: string;
+};

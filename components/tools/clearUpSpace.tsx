@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useJellyfin } from '@/utils/contexts/apiContexts';
+import React, { useContext, useEffect, useState } from 'react';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 import { Button, Stack, Typography, LinearProgress, Box, Tooltip, IconButton } from '@mui/material';
 import ClearUpSpaceTable from './clearUpSpace/ClearUpSpaceTable';
 import DesiredSpaceInput from './clearUpSpace/DesiredSpaceInput';
@@ -10,9 +10,9 @@ import CheckAPIKeys from '@/components/checkAPIkeys';
 import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsDialog from './clearUpSpace/SettingsDialog';
+import { JellyfinContext } from '@/utils/contexts/contexts';
 
 const ClearUpSpace: React.FC = () => {
-
 
   const [watchedItems, setWatchedItems] = useState<Item[]>([]);
   const [desiredSpace, setDesiredSpace] = useState<number>(0);
@@ -21,21 +21,25 @@ const ClearUpSpace: React.FC = () => {
   const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
   const [deleteMethod, setDeleteMethod] = useState<'jellyfin' | 'jellyseer'>('jellyfin');
   const [showSettingsDialog, setShowSettingsDialog] = useState<boolean>(false);
-  const jellyfin = useJellyfin();
+  const jellyfin = useContext(JellyfinContext);
+
+  const clearItems = () => {
+    setFilteredItems([]);
+  }
 
   const handleButtonClick = async () => {
     setLoading(true);
-    if (!jellyfin.authorised) {
+    if (!jellyfin || jellyfin.authenticationStatus !== 'true') {
       setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
-    const users = await jellyfin.makeRequest("GET", "users");
+    const users = (await jellyfin.instance.getUsers()).data;
 
     const itemCount: { [key: string]: { type: string; name: string; views: number; size: number; lastPlayedDate: string; dateCreated: string } } = {};
 
     // Make a single request for Items of type Movie or Series to set all views to 0 and get total size
-    const allItems = await jellyfin.makeRequest("GET", "Items", { IncludeItemTypes: "Movie,Series,Episode", Recursive: "true", Fields: "MediaSources,SeriesId,SeriesName,DateCreated" });
+    const allItems = (await jellyfin.instance.getAllItems()).data;
     allItems.Items.forEach((item: ItemResponse) => {
       const size = item.MediaSources?.[0]?.Size || 0;
       const dateCreated = item.DateCreated || '';
@@ -52,7 +56,7 @@ const ClearUpSpace: React.FC = () => {
     });
 
     for (const user of users) {
-      const watchedItems = await jellyfin.makeRequest("GET", `users/${user.Id}/items`, { IncludeItemTypes: "Movie,Episode", Recursive: "true", Fields: "UserData,SeriesId,LastPlayedDate", Filters: "IsPlayed" });
+      const watchedItems = (await jellyfin.instance.getAllWatchedItems(user.Id)).data;
       watchedItems.Items.forEach((item: ItemResponse) => {
         const views = item.UserData?.PlayCount || 0;
         const lastPlayedDate = item.UserData.LastPlayedDate || '';
@@ -92,14 +96,17 @@ const ClearUpSpace: React.FC = () => {
   const handleCloseSettingsDialog = () => setShowSettingsDialog(false);
 
   useEffect(() => {
-    const filtered = watchedItems.reduce<{ items: typeof watchedItems; totalSize: number }>((acc, item) => {
-      if (acc.totalSize < desiredSpace * 1024 * 1024 * 1024) { // Convert desiredSpace from GB to bytes
-        acc.items.push(item);
-        acc.totalSize += item.size || 0;
+    function* filterItems(items: Item[], maxSize: number) {
+      let totalSize = 0;
+      for (const item of items) {
+        if (totalSize >= maxSize) break;
+        yield item;
+        totalSize += item.size || 0;
       }
-      return acc;
-    }, { items: [], totalSize: 0 }).items;
+    }
 
+    const maxSize = desiredSpace * 1024 * 1024 * 1024; // Convert desiredSpace from GB to bytes
+    const filtered = Array.from(filterItems(watchedItems, maxSize));
     setFilteredItems(filtered);
   }, [watchedItems, desiredSpace]);
 
@@ -116,7 +123,7 @@ const ClearUpSpace: React.FC = () => {
         <Typography variant="body1">
           {filteredItems.length} items selected for deletion, total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
         </Typography>
-        <DeleteMediaButton filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} />
+        <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
         <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
           <IconButton>
             <HelpIcon />
