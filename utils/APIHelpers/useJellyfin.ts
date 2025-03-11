@@ -42,6 +42,7 @@ export const useJellyfin = () => {
 
   return {
     jellyfinInstance,
+    jellyfinConfig,
     setJellyfinConfig,
     jellyfinAuthorised,
     setJellyfinAuthorised

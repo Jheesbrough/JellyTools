@@ -42,6 +42,7 @@ export const useJellyseer = () => {
 
   return {
     jellyseerInstance,
+    jellyseerConfig,
     setJellyseerConfig,
     jellyseerAuthorised,
     setJellyseerAuthorised
