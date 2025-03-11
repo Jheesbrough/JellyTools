@@ -1,9 +1,9 @@
-# Jellyfin tools
+# JellyTools
 
 <!-- Shields.io -->
-![GitHub](https://img.shields.io/github/license/jheesbrough/jellyfin-tools)
+![GitHub](https://img.shields.io/github/license/jheesbrough/JellyTools) ![GitHub last commit](https://img.shields.io/github/last-commit/jheesbrough/JellyTools) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jheesbrough/JellyTools)
 
-This is a collection of external tools to help manage your [Jellyfin](https://github.com/jellyfin/jellyfin) media server. It uses both the Jellyfin API and the Jellyseer API to fetch data and run various housekeeping tasks.
+The JellyTools webapp is a collection of external tools to help manage your [Jellyfin](https://github.com/jellyfin/jellyfin) media server. It uses both the Jellyfin API and the Jellyseer API to fetch data and run various housekeeping tasks.
 
 ## Features
 
@@ -23,4 +23,4 @@ Built on node with Next, Tailwind and TypeScript and MUI components. Issues and 
 
 - Jellyfin uses its API token in the authentication header as`Mediabrowser Token="token"` header, while Jellyseer uses the header X-Api-Key.
 
-- For the 'date added' behaviour to work as expected, use the date scanned into the library, not the date the file was created. This can be changed in the settings under Libraries > Display.
+- For the 'date added' behaviour to work as expected, use the date scanned into the library, not the date the file was created. This can be changed in your Jellyfin settings under Libraries > Display.
