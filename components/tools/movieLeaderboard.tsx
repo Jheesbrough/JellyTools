@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
-import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
+import { JellyfinContext } from '@/utils/contexts/contexts';
 import { SelectChangeEvent, Stack, LinearProgress, Typography, Box, Tooltip, IconButton } from '@mui/material';
 import LeaderboardTable from '@/components/common/LeaderboardTable';
 import SortMethodSelector from '@/components/common/SortMethodSelector';
@@ -13,7 +13,7 @@ const MovieLeaderboard: React.FC = () => {
   const [watchedMovies, setWatchedMovies] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
-  const jellyfin = useJellyfin();
+  const jellyfin = useContext(JellyfinContext);
 
   const handleSortMethodChange = (event: SelectChangeEvent<string>) => {
     setSortMethod(event.target.value as string);
@@ -21,16 +21,18 @@ const MovieLeaderboard: React.FC = () => {
 
   const handleButtonClick = async () => {
     setLoading(true);
-    if (!jellyfin.authorised) {
+
+    if (!jellyfin || jellyfin.authenticationStatus !== 'true') {
       setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
-    const users = await jellyfin.getUsers();
+
+    const users = (await jellyfin.instance.getUsers()).data;
     const movieCount: { [key: string]: number } = {};
 
     for (const user of users) {
-      const watched = await jellyfin.getWatchedMovies(user.Id);
+      const watched = (await jellyfin.instance.getWatchedMovies(user.Id)).data;
       watched.Items.forEach((item: ItemResponse) => {
         const count = sortMethod === 'played' ? 1 : item.UserData.PlayCount || 0;
         if (movieCount[item.Name]) {

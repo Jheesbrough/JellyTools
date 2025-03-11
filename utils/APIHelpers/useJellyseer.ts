@@ -7,44 +7,43 @@ type jellyConfigs = {
   apiKey: string;
 };
 
-type authorized = 'true' | 'false' | 'checking' | 'error';
+type authenticationStatus = 'true' | 'false' | 'checking' | 'error';
 
 export const useJellyseer = () => {
-  const [jellyseerConfig, setJellyseerConfig] = useState<jellyConfigs>({ baseURL: '', apiKey: '' });
-  const [jellyseerInstance, setJellyseerInstance] = useState<ReturnType<typeof createJellyseer> | null>(null);
-  const [jellyseerAuthorised, setJellyseerAuthorised] = useState<authorized>('false');
+  const [config, setConfig] = useState<jellyConfigs>({ baseURL: '', apiKey: '' });
+  const [instance, setInstance] = useState<ReturnType<typeof createJellyseer>>(createJellyseer(config.baseURL, config.apiKey));
+  const [authenticationStatus, setAuthenticationStatus] = useState<authenticationStatus>('false');
 
   useEffect(() => {
-    setJellyseerConfig({
+    setConfig({
       baseURL: document.cookie.replace(/(?:(?:^|.*;\s*)jellyseerEndpoint\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '',
       apiKey: document.cookie.replace(/(?:(?:^|.*;\s*)jellyseerApiKey\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '',
     });
   }, []);
 
   useEffect(() => {
-    document.cookie = `jellyseerEndpoint=${jellyseerConfig.baseURL}; path=/;`;
-    document.cookie = `jellyseerApiKey=${jellyseerConfig.apiKey}; path=/;`;
+    document.cookie = `jellyseerEndpoint=${config.baseURL}; path=/;`;
+    document.cookie = `jellyseerApiKey=${config.apiKey}; path=/;`;
 
-    const jellyseer = createJellyseer(jellyseerConfig.baseURL, jellyseerConfig.apiKey);
-    setJellyseerInstance(jellyseer);
+    const jellyseer = createJellyseer(config.baseURL, config.apiKey);
+    setInstance(jellyseer);
 
-    if (jellyseerConfig.baseURL !== '' || jellyseerConfig.apiKey !== '') {
-      setJellyseerAuthorised('checking');
+    if (config.baseURL !== '' || config.apiKey !== '') {
+      setAuthenticationStatus('checking');
       jellyseer.validate().then((response) => {
         if (response.success) {
-          setJellyseerAuthorised('true');
+          setAuthenticationStatus('true');
         } else {
-          setJellyseerAuthorised('error');
+          setAuthenticationStatus('error');
         }
       });
     }
-  }, [jellyseerConfig]);
+  }, [config]);
 
   return {
-    jellyseerInstance,
-    jellyseerConfig,
-    setJellyseerConfig,
-    jellyseerAuthorised,
-    setJellyseerAuthorised
+    instance,
+    config,
+    setConfig,
+    authenticationStatus,
   };
 };

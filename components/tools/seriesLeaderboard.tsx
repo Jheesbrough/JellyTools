@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
 import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 import { SelectChangeEvent, Stack, LinearProgress, Typography, Box, IconButton, Tooltip } from '@mui/material';
@@ -7,13 +7,14 @@ import SortMethodSelector from '@/components/common/SortMethodSelector';
 import { Item, ItemResponse } from '@/utils/types';
 import CheckAPIKeys from '@/components/checkAPIkeys';
 import HelpIcon from '@mui/icons-material/Help';
+import { JellyfinContext } from '@/utils/contexts/contexts';
 
 const SeriesLeaderboard: React.FC = () => {
   const [sortMethod, setSortMethod] = useState<string>('played');
   const [seriesViews, setSeriesViews] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showAPIKeyDialog, setShowAPIKeyDialog] = useState<boolean>(false);
-  const jellyfin = useJellyfin();
+  const jellyfin = useContext(JellyfinContext);
 
   const handleSortMethodChange = (event: SelectChangeEvent<string>) => {
     setSortMethod(event.target.value as string);
@@ -21,16 +22,16 @@ const SeriesLeaderboard: React.FC = () => {
 
   const handleButtonClick = async () => {
     setLoading(true);
-    if (!jellyfin.authorised) {
+    if (!jellyfin || jellyfin.authenticationStatus !== 'true') {
       setShowAPIKeyDialog(true);
       setLoading(false);
       return;
     }
-    const users = await jellyfin.getUsers();
+    const users = (await jellyfin.instance.getUsers()).data;
     const seriesMap: { [key: string]: Item } = {};
 
     for (const user of users) {
-      const response = await jellyfin.getWatchedSeriesAndEpisodes(user.Id);
+      const response = await (await jellyfin.instance.getWatchedSeriesAndEpisodes(user.Id)).data;
 
       response.Items.forEach((item: ItemResponse) => {
         if (item.Type === "Episode") {

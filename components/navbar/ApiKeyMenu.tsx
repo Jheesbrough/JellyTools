@@ -29,7 +29,7 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
   };
 
   const renderMenuItem = (id: string, label: string) => {
-    const isAuthorized = id === 'jellyfin' ? jellyfin?.jellyfinAuthorised : jellyseer?.jellyseerAuthorised;
+    const isAuthorized = id === 'jellyfin' ? jellyfin?.authenticationStatus : jellyseer?.authenticationStatus;
     let icon;
     switch (isAuthorized) {
       case 'true':

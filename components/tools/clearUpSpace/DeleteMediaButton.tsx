@@ -1,21 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
 import { Item } from '@/utils/types';
+import { JellyseerContext, JellyfinContext } from '@/utils/contexts/contexts';
 
 interface DeleteMediaButtonProps {
   clearItems: () => void;
   filteredItems: Item[];
   setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>>;
   deleteMethod: 'jellyfin' | 'jellyseer';
+  setShowAPIKeyDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filteredItems, setWatchedItems, deleteMethod }) => {
+const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filteredItems, setWatchedItems, deleteMethod, setShowAPIKeyDialog }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cooldown, setCooldown] = useState(5);
 
-  const jellyseer = useJellyseer();
-  const jellyfin = useJellyfin();
+  const jellyseer = useContext(JellyseerContext);
+  const jellyfin = useContext(JellyfinContext);
+
+  if (!jellyfin || !jellyseer) return null;
+
+  useEffect(() => {
+    if (!open) return;
+
+    if (deleteMethod === 'jellyfin' && jellyfin.authenticationStatus !== 'true') {
+      setShowAPIKeyDialog(true);
+      setOpen(false);
+
+    }
+
+    if (deleteMethod === 'jellyseer' && jellyseer.authenticationStatus !== 'true') {
+      setShowAPIKeyDialog(true);
+      setOpen(false);
+    }
+  }, [open]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -37,9 +56,9 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filte
   const handleConfirmDelete = async () => {
     const itemIds = filteredItems.map(item => item.id);
     if (deleteMethod === 'jellyfin') {
-      await jellyfin.deleteItems(itemIds);
+      await jellyfin.instance.deleteItems(itemIds);
     } else {
-      await jellyseer.deleteItems(itemIds);
+      await jellyseer.instance.deleteItems(itemIds);
     }
     clearItems();
     setConfirmOpen(false);

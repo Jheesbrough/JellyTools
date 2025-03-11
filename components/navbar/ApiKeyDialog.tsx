@@ -39,7 +39,7 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
       setTestResult(null);
       setLoading(false);
     } else {
-      const config = currentApp === 'jellyfin' ? jellyfin?.jellyfinConfig : jellyseer?.jellyseerConfig;
+      const config = currentApp === 'jellyfin' ? jellyfin?.config : jellyseer?.config;
       setEndpoint(config?.baseURL || '');
       setApiKey(config?.apiKey || '');
     }
@@ -70,9 +70,9 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
     };
 
     if (currentApp === 'jellyfin') {
-      result = await authenticate(jellyfin?.jellyfinInstance, 'Jellyfin');
+      result = await authenticate(jellyfin?.instance, 'Jellyfin');
     } else if (currentApp === 'jellyseer') {
-      result = await authenticate(jellyseer?.jellyseerInstance, 'Jellyseer');
+      result = await authenticate(jellyseer?.instance, 'Jellyseer');
     }
 
     if (result) {
@@ -84,15 +84,11 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
   const handleManageApiKeys = async () => {
     if (testResult && testResult.success && currentApp) {
       if (currentApp === 'jellyfin') {
-        jellyfin?.setJellyfinConfig({ baseURL: endpoint, apiKey });
+        jellyfin?.setConfig({ baseURL: endpoint, apiKey });
       }
-
+      ``
       if (currentApp === 'jellyseer') {
-        jellyseer?.setJellyseerConfig({ baseURL: endpoint, apiKey });
-      }
-
-      if (!isDialogOpen) {
-        alert(`Successfully authenticated with ${currentApp.charAt(0).toUpperCase() + currentApp.slice(1)}!`);
+        jellyseer?.setConfig({ baseURL: endpoint, apiKey });
       }
 
       handleDialogClose();

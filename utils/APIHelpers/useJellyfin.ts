@@ -7,44 +7,43 @@ type jellyConfigs = {
   apiKey: string;
 };
 
-type authorized = 'true' | 'false' | 'checking' | 'error';
+type authenticationStatus = 'true' | 'false' | 'checking' | 'error';
 
 export const useJellyfin = () => {
-  const [jellyfinConfig, setJellyfinConfig] = useState<jellyConfigs>({ baseURL: '', apiKey: '' });
-  const [jellyfinInstance, setJellyfinInstance] = useState<ReturnType<typeof createJellyfin> | null>(null);
-  const [jellyfinAuthorised, setJellyfinAuthorised] = useState<authorized>('false');
+  const [config, setConfig] = useState<jellyConfigs>({ baseURL: '', apiKey: '' });
+  const [instance, setInstance] = useState<ReturnType<typeof createJellyfin>>(createJellyfin(config.baseURL, config.apiKey));
+  const [authenticationStatus, setAuthenticationStatus] = useState<authenticationStatus>('false');
 
   useEffect(() => {
-    setJellyfinConfig({
+    setConfig({
       baseURL: document.cookie.replace(/(?:(?:^|.*;\s*)jellyfinEndpoint\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '',
       apiKey: document.cookie.replace(/(?:(?:^|.*;\s*)jellyfinApiKey\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '',
     });
   }, []);
 
   useEffect(() => {
-    document.cookie = `jellyfinEndpoint=${jellyfinConfig.baseURL}; path=/;`;
-    document.cookie = `jellyfinApiKey=${jellyfinConfig.apiKey}; path=/;`;
+    document.cookie = `jellyfinEndpoint=${config.baseURL}; path=/;`;
+    document.cookie = `jellyfinApiKey=${config.apiKey}; path=/;`;
 
-    const jellyfin = createJellyfin(jellyfinConfig.baseURL, jellyfinConfig.apiKey);
-    setJellyfinInstance(jellyfin);
+    const jellyfin = createJellyfin(config.baseURL, config.apiKey);
+    setInstance(jellyfin);
 
-    if (jellyfinConfig.baseURL !== '' || jellyfinConfig.apiKey !== '') {
-      setJellyfinAuthorised('checking');
+    if (config.baseURL !== '' || config.apiKey !== '') {
+      setAuthenticationStatus('checking');
       jellyfin.validate().then((response) => {
         if (response.success) {
-          setJellyfinAuthorised('true');
+          setAuthenticationStatus('true');
         } else {
-          setJellyfinAuthorised('error');
+          setAuthenticationStatus('error');
         }
       });
     }
-  }, [jellyfinConfig]);
+  }, [config]);
 
   return {
-    jellyfinInstance,
-    jellyfinConfig,
-    setJellyfinConfig,
-    jellyfinAuthorised,
-    setJellyfinAuthorised
+    instance,
+    config,
+    setConfig,
+    authenticationStatus,
   };
 };
