@@ -29,7 +29,8 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
 
       return response.data;
     } catch (error) {
-      throw new Error('Error making internal API request');
+      console.error(error);
+      return { success: false, error: 'Error making internal API request' };
     }
   };
 
@@ -111,7 +112,7 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
       try {
         await sendInternalApiRequest("DELETE", `/media/${id}/file`);
       } catch (error) {
-        // Handle error
+        // File might not exist, no need to throw error
       }
       await sendInternalApiRequest("DELETE", `/media/${id}`);
     }
