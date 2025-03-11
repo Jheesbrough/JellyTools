@@ -9,12 +9,11 @@ import { APIresponse } from '@/utils/types';
  * @returns {object} - An object with methods to interact with the Jellyseer API.
  */
 export default function createJellyseer(baseURL: string, apiKey: string) {
-  const sendRequest = async (method: string, endpoint: string, data: any = null): Promise<any> => {
-    if (data) {
-      data.baseurl = baseURL;
-    } else {
-      data = { baseurl: baseURL };
-    }
+  const TESTING_ENDPOINT = "settings/about";
+
+  const sendInternalApiRequest = async (method: string, endpoint: string, data: any = null): Promise<any> => {
+
+    const requestData = data ? { ...data, baseurl: baseURL } : { baseurl: baseURL };
     const url = `api/jellyseer/${endpoint}`;
 
     try {
@@ -25,27 +24,40 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
           'Content-Type': 'application/json',
           'X-Api-Key': apiKey
         },
-        params: data
+        params: requestData
       });
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios error
-      } else {
-        // Handle non-Axios error
-      }
-      throw new Error('Error making request');
+      throw new Error('Error making internal API request');
+    }
+  };
+
+  const testEndpoint = async (baseURL: string, apiKey: string): Promise<APIresponse> => {
+    try {
+      const response = await axios({
+        method: 'GET',
+        url: `api/jellyseer/${TESTING_ENDPOINT}`,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': apiKey
+        },
+        params: { baseurl: baseURL }
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error('Error making internal API request');
     }
   };
 
   const getMedia = async (): Promise<any> => {
-    return await sendRequest("GET", "media");
+    return await sendInternalApiRequest("GET", "media");
   };
 
   const validate = async (): Promise<APIresponse> => {
     try {
-      const res = await sendRequest("GET", "settings/about");
+      const res = await sendInternalApiRequest("GET", TESTING_ENDPOINT);
       if (res.success) {
         return { success: true };
       } else {
@@ -63,7 +75,7 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
     let res;
 
     do {
-      res = await sendRequest("GET", "media", { take: take.toString(), skip: skip.toString() });
+      res = await sendInternalApiRequest("GET", "media", { take: take.toString(), skip: skip.toString() });
       allMedia = allMedia.concat(res.results as { jellyfinMediaId: string | null; id: string; }[]);
       skip += take;
     } while (res.results.length === take);
@@ -82,7 +94,7 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
     let allRequests: any[] = [];
 
     do {
-      res = await sendRequest("GET", `request`, { take: take.toString(), skip: skip.toString() });
+      res = await sendInternalApiRequest("GET", `request`, { take: take.toString(), skip: skip.toString() });
       allRequests = allRequests.concat(res.results);
       skip += take;
     } while (res.results.length === take);
@@ -92,20 +104,21 @@ export default function createJellyseer(baseURL: string, apiKey: string) {
     );
 
     for (const request of filteredRequests) {
-      await sendRequest("DELETE", `/request/${request.id}`);
+      await sendInternalApiRequest("DELETE", `/request/${request.id}`);
     }
 
     for (const id of mediaIds) {
       try {
-        await sendRequest("DELETE", `/media/${id}/file`);
+        await sendInternalApiRequest("DELETE", `/media/${id}/file`);
       } catch (error) {
         // Handle error
       }
-      await sendRequest("DELETE", `/media/${id}`);
+      await sendInternalApiRequest("DELETE", `/media/${id}`);
     }
   };
 
   return {
+    testEndpoint,
     getMedia,
     validate,
     deleteItems,

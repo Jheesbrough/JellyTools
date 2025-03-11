@@ -8,7 +8,7 @@ import { APIresponse } from '@/utils/types';
  * @param {Record<string, string>} headers - The headers for the request.
  * @returns {Promise<APIresponse>} - A promise that resolves to the response data.
  */
-export async function makeAxiosRequest(url: URL, method: 'get' | 'delete', headers: Record<string, string>): Promise<APIresponse> {
+export async function sendAxiosJellyRequest(url: URL, method: 'get' | 'delete', headers: Record<string, string>): Promise<APIresponse> {
   try {
     const response = await axios({
       method: method,

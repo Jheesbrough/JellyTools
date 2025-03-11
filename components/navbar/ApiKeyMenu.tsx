@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React, { useState, useContext } from 'react';
 import { JellyfinContext, JellyseerContext } from '@/utils/contexts/contexts';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 
 interface ApiKeyMenuProps {
   isDialogOpen: boolean;
@@ -28,38 +29,40 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
   const [testResult, setTestResult] = useState<{ success: boolean; message?: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const authenticateWithJellyfin = async (endpoint: string, apiKey: string) => {
-    if (jellyfin) {
-      jellyfin.setJellyfinConfig({ baseURL: endpoint, apiKey });
+  const handleTestApiKeys = async () => {
+    if (!endpoint || !apiKey || !currentApp) return;
+
+    setLoading(true);
+    let result: { success: boolean; message?: string } | null = null;
+
+    const authenticate = async (instance: any, instanceName: string) => {
+      if (!instance) {
+        return { success: false, message: `Failed to authenticate with ${instanceName}. No ${instanceName} instance found.` };
+      }
 
       try {
-        const result = await jellyfin.jellyfinInstance?.validate();
-        if (result?.success) {
+        const testResult = await instance.testEndpoint(endpoint, apiKey);
+        if (testResult?.success) {
           return { success: true };
         } else {
-          return { success: false, message: result?.error || 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
+          return { success: false, message: testResult?.error || `Failed to authenticate with ${instanceName}. An unknown error occurred.` };
         }
       } catch (error) {
+        console.error(error);
         return { success: false, message: 'An unknown error occurred.' };
       }
-    }
-  };
+    };
 
-  const authenticateWithJellyseer = async (endpoint: string, apiKey: string) => {
-    if (jellyseer) {
-      jellyseer.setJellyseerConfig({ baseURL: endpoint, apiKey });
-
-      try {
-        const result = await jellyseer.jellyseerInstance?.validate();
-        if (result?.success) {
-          return { success: true };
-        } else {
-          return { success: false, message: result?.error || 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
-        }
-      } catch (error) {
-        return { success: false, message: 'An unknown error occurred.' };
-      }
+    if (currentApp === 'jellyfin') {
+      result = await authenticate(jellyfin?.jellyfinInstance, 'Jellyfin');
+    } else if (currentApp === 'jellyseer') {
+      result = await authenticate(jellyseer?.jellyseerInstance, 'Jellyseer');
     }
+
+    if (result) {
+      setTestResult(result);
+    }
+    setLoading(false);
   };
 
   const handleDialogOpen = (app: string) => {
@@ -75,35 +78,20 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
     setTestResult(null);
   };
 
-  const handleTestApiKeys = async () => {
-    if (endpoint && apiKey && currentApp) {
-      setLoading(true);
-      let result: { success: boolean; message?: string } | null = null;
-      if (currentApp === 'jellyfin') {
-        result = (await authenticateWithJellyfin(endpoint, apiKey)) || { success: false, message: 'Failed to authenticate with Jellyfin. An unknown error occurred.' };
-        if (result.success) {
-          jellyfin?.setJellyfinAuthorised(true);
-        }
-      } else if (currentApp === 'jellyseer') {
-        result = (await authenticateWithJellyseer(endpoint, apiKey)) || { success: false, message: 'Failed to authenticate with Jellyseer. An unknown error occurred.' };
-        if (result.success) {
-          jellyseer?.setJellyseerAuthorised(true);
-        }
-      }
-      if (result) {
-        setTestResult(result);
-      }
-      setLoading(false);
-    }
-  };
-
   const handleManageApiKeys = async () => {
     if (testResult && testResult.success && currentApp) {
-      document.cookie = `${currentApp}Endpoint=${endpoint}; path=/;`;
-      document.cookie = `${currentApp}ApiKey=${apiKey}; path=/;`;
+      if (currentApp === 'jellyfin') {
+        jellyfin?.setJellyfinConfig({ baseURL: endpoint, apiKey });
+      }
+
+      if (currentApp === 'jellyseer') {
+        jellyseer?.setJellyseerConfig({ baseURL: endpoint, apiKey });
+      }
+
       if (!isDialogOpen) {
         alert(`Successfully authenticated with ${currentApp.charAt(0).toUpperCase() + currentApp.slice(1)}!`);
       }
+
       handleDialogClose();
     }
   };
@@ -120,13 +108,27 @@ const ApiKeyMenu: React.FC<ApiKeyMenuProps> = ({ isDialogOpen, setDialogOpen }) 
 
   const renderMenuItem = (id: string, label: string) => {
     const isAuthorized = id === 'jellyfin' ? jellyfin?.jellyfinAuthorised : jellyseer?.jellyseerAuthorised;
+    let icon;
+    switch (isAuthorized) {
+      case 'true':
+        icon = <CheckCircleIcon style={{ color: 'green', marginRight: 'auto' }} />;
+        break;
+      case 'false':
+        icon = <ErrorIcon style={{ color: 'gray', marginRight: 'auto' }} />;
+        break;
+      case 'checking':
+        icon = <CircularProgress size={20} style={{ color: 'gray', fontWeight: 'bold', marginRight: 'auto' }} />;
+        break;
+      case 'error':
+        icon = <ErrorIcon style={{ color: 'red', marginRight: 'auto' }} />;
+        break;
+      default:
+        icon = <ErrorIcon style={{ color: 'grey', marginRight: 'auto' }} />;
+    }
+
     return (
       <MenuItem key={id} onClick={() => handleDialogOpen(id)}>
-        {isAuthorized ? (
-          <CheckCircleIcon style={{ color: 'green', marginRight: 'auto' }} />
-        ) : (
-          <ErrorIcon style={{ color: 'red', marginRight: 'auto' }} />
-        )}
+        {icon}
         <Typography variant="h6" paddingLeft="10px">
           {label}
         </Typography>

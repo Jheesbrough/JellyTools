@@ -1,6 +1,6 @@
 "use client";
 import { APIresponse } from '@/utils/types';
-import { makeAxiosRequest } from '@/utils/axiosUtil';
+import { sendAxiosJellyRequest } from '@/utils/axiosUtil';
 
 /**
  * Creates a Jellyfin instance to interact with Jellyfin API.
@@ -9,12 +9,22 @@ import { makeAxiosRequest } from '@/utils/axiosUtil';
  * @returns {object} - An object with methods to interact with the Jellyfin API.
  */
 export default function createJellyfin(baseURL: string, apiKey: string) {
-  const makeAxiosRequestWithHeader = async (endpoint: string, method: 'get' | 'delete'): Promise<APIresponse> => {
-    return makeAxiosRequest(new URL(endpoint, baseURL), method, { Authorization: `Mediabrowser Token="${apiKey}"` });
+  const TESTING_ENDPOINT = '/system/info';
+
+  const testEndpoint = async (baseURL: string, apiKey: string): Promise<APIresponse> => {
+    return sendAxiosJellyRequest(new URL(TESTING_ENDPOINT, baseURL), 'get', { Authorization: `Mediabrowser Token="${apiKey}"` });
   };
 
+  const makeAxiosRequestWithHeader = async (endpoint: string, method: 'get' | 'delete'): Promise<APIresponse> => {
+    return sendAxiosJellyRequest(new URL(endpoint, baseURL), method, { Authorization: `Mediabrowser Token="${apiKey}"` });
+  };
   const fetchData = async (endpoint: string): Promise<APIresponse> => {
     return makeAxiosRequestWithHeader(endpoint, 'get');
+  };
+
+  const validate = async (): Promise<APIresponse> => {
+    const response = await fetchData(TESTING_ENDPOINT);
+    return response;
   };
 
   const deleteData = async (endpoint: string): Promise<APIresponse> => {
@@ -41,16 +51,6 @@ export default function createJellyfin(baseURL: string, apiKey: string) {
     return await fetchData('/Items?IncludeItemTypes=Movie&Recursive=true&Fields=MediaSources');
   };
 
-  const deleteItem = async (jellyfinItemId: string): Promise<void> => {
-    await deleteData(`/items/${jellyfinItemId}`);
-  };
-
-  const deleteItems = async (jellyfinItemIds: string[]): Promise<void> => {
-    for (const jellyfinItemId of jellyfinItemIds) {
-      await deleteItem(jellyfinItemId);
-    }
-  };
-
   const getAllItems = async () => {
     return await fetchData('/Items?IncludeItemTypes=Movie,Series,Episode&Recursive=true&Fields=MediaSources,SeriesId,SeriesName,DateCreated');
   };
@@ -59,9 +59,14 @@ export default function createJellyfin(baseURL: string, apiKey: string) {
     return await fetchData(`/users/${userId}/items?IncludeItemTypes=Movie,Episode&Recursive=true&Fields=UserData,SeriesId,LastPlayedDate&Filters=IsPlayed`);
   };
 
-  const validate = async (): Promise<APIresponse> => {
-    const response = await fetchData('/system/info');
-    return response;
+  const deleteItem = async (jellyfinItemId: string): Promise<void> => {
+    await deleteData(`/items/${jellyfinItemId}`);
+  };
+
+  const deleteItems = async (jellyfinItemIds: string[]): Promise<void> => {
+    for (const jellyfinItemId of jellyfinItemIds) {
+      await deleteItem(jellyfinItemId);
+    }
   };
 
   return {
@@ -75,5 +80,6 @@ export default function createJellyfin(baseURL: string, apiKey: string) {
     getAllItems,
     getAllWatchedItems,
     validate,
+    testEndpoint
   };
 }
