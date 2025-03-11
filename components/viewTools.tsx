@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Paper, Modal, Typography, Fade, Chip } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import { tools } from './toolsList';
@@ -47,12 +47,14 @@ const ViewTools = () => {
     const paperElement = paperRefs.current[index];
     if (!paperElement) return;
     const rect = paperElement.getBoundingClientRect();
+
     const startStyle: ModalStyle = {
       top: rect.top,
       left: rect.left,
       width: rect.width,
       height: rect.height,
     };
+
     const endStyle: ModalStyle = {
       top: window.innerHeight * 0.1,
       left: window.innerWidth * 0.1,
@@ -70,6 +72,23 @@ const ViewTools = () => {
     animateModalSize(modalStyle, initialModalStyle, 300, () => setOpen(false));
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (open) {
+        const endStyle: ModalStyle = {
+          top: window.innerHeight * 0.1,
+          left: window.innerWidth * 0.1,
+          width: window.innerWidth * 0.8,
+          height: window.innerHeight * 0.8,
+        };
+        animateModalSize(modalStyle, endStyle, 300);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [open, modalStyle]);
+
   const squares = tools.map((tool, index) => (
     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
       <Paper
@@ -83,7 +102,7 @@ const ViewTools = () => {
         </div>
         <div>
           {tool.tags.map((tag, tagIndex) => (
-        <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
+            <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
           ))}
         </div>
       </Paper>
