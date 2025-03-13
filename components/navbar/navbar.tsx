@@ -5,7 +5,6 @@ import Popper from '@mui/material/Popper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useRef, useState } from 'react';
-import WSButton from '../WSButton';
 import ApiKeyMenu from './ApiKeyMenu';
 
 const Navbar: React.FC = () => {
@@ -47,29 +46,23 @@ const Navbar: React.FC = () => {
   }, [open, dialogOpen]);
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" id="navbar" style={{ backgroundColor: '#2b2c32' }}>
       <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }} color='white' fontWeight={'bold'}>
+        <Typography variant="h6" style={{ flexGrow: 1, margin: 0 }} color='white' fontWeight={'bold'}>
           JellyTools
         </Typography>
-        <WSButton
-          onClick={handleClick}
-          variant='contained'
-          color='secondary'
-        >
-          <Typography color='black' fontSize={14}>
-            Manage API Keys
-          </Typography>
-        </WSButton>
-        <Popper open={open} anchorEl={anchorEl} placement="top-start" ref={popperRef}>
+        <Typography fontSize={16} onClick={handleClick} style={{ cursor: 'pointer' }}>
+          Manage API Keys
+        </Typography>
+        <Popper open={open} anchorEl={anchorEl} placement="bottom" ref={popperRef}>
           {({ TransitionProps }) => (
-            <Paper {...TransitionProps} style={{ padding: '10px' }}>
+            <Paper {...TransitionProps} style={{ padding: '10px', backgroundColor: '#3b3c42' }}>
               <ApiKeyMenu isDialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
             </Paper>
           )}
         </Popper>
       </Toolbar>
-    </AppBar>
+    </AppBar >
   );
 };
 

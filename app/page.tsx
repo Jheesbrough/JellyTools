@@ -1,16 +1,20 @@
-import React from 'react';
+"use client";
 import Navbar from "@/components/navbar/navbar";
-import { JellyApisProvider } from '@/utils/contexts/JellyApisProvider';
 import ViewApplications from '@/components/viewTools';
-import { Container } from '@mui/material';
+import { JellyApisProvider } from '@/utils/contexts/JellyApisProvider';
+import { Box, Container } from '@mui/material';
 
 export default function Home() {
   return (
-    <JellyApisProvider>
-      <Navbar />
-      <Container sx={{ mt: 3 }}>
-        <ViewApplications />
-      </Container>
-    </JellyApisProvider>
+    <>
+      <JellyApisProvider>
+        <Navbar />
+        <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+          <Container sx={{ pt: 3, position: 'relative', zIndex: 0 }}>
+            <ViewApplications />
+          </Container>
+        </Box>
+      </JellyApisProvider>
+    </>
   );
 }

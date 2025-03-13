@@ -133,13 +133,18 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleDialogClose} color="primary">
+        <Button onClick={handleDialogClose} sx={{ color: '#fff' }}>
           Cancel
         </Button>
-        <Button onClick={handleTestApiKeys} color="primary" startIcon={getTestButtonIcon()}>
+        <Button onClick={handleTestApiKeys} sx={{ color: '#fff' }} startIcon={getTestButtonIcon()}>
           Test
         </Button>
-        <Button onClick={handleManageApiKeys} color="primary" disabled={!testResult || !testResult.success}>
+        <Button
+          onClick={handleManageApiKeys}
+          sx={{ color: '#fff' }}
+          disabled={!testResult || !testResult.success}
+          style={{ color: (!testResult || !testResult.success) ? 'rgba(255, 255, 255, 0.5)' : '#fff' }}
+        >
           Save
         </Button>
       </DialogActions>

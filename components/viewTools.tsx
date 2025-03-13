@@ -97,12 +97,20 @@ const ViewTools = () => {
         onClick={() => handleOpen(tool.content, index)}
       >
         <div>
-          <Typography variant="h6">{tool.title}</Typography>
+          <Typography variant="h5" fontWeight={'bold'} sx={{ mb: 2 }}>{tool.title}</Typography>
           <Typography variant="body1">{tool.description}</Typography>
         </div>
         <div>
           {tool.tags.map((tag, tagIndex) => (
-            <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
+            <Chip
+              size={"small"}
+              variant='outlined'
+              color={"info"}
+              key={tagIndex}
+              label={tag}
+              style={{ marginRight: 4, marginBottom: 4, color: 'white' }}
+            />
+
           ))}
         </div>
       </Paper>
@@ -111,7 +119,7 @@ const ViewTools = () => {
 
   return (
     <>
-      <Grid container spacing={2} m={2}>
+      <Grid container spacing={3} m={2}>
         {squares}
       </Grid>
       <Modal open={open} onClose={handleClose} closeAfterTransition>
