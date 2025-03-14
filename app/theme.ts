@@ -4,7 +4,7 @@ import { createTheme } from "@mui/material";
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2b2c32',
+      main: '#f0f6f7',
     },
     secondary: {
       main: '#39b6d3',
@@ -25,38 +25,36 @@ const theme = createTheme({
     text: {
       primary: '#f0f6f7',
       secondary: 'rgba(255, 255, 255, 0.7)',
-      disabled: 'rgba(210, 210, 210, 0.5)',
+      disabled: 'rgba(210, 210, 210, 0.58)',
     },
     action: {
-      active: '#ffffff',
+      active: '#ffffff', // MUI icon buttons color
+      disabledBackground: 'rgba(255, 255, 255, 0.12)',
     },
   },
   components: {
-    MuiOutlinedInput: {
+    MuiTypography: {
       styleOverrides: {
-        input: {
-          '& $notchedOutline': {
-            borderColor: '#ffffff',
-          },
-          '&:hover $notchedOutline': {
-            borderColor: '#ffffff',
-          },
-          '&$focused $notchedOutline': {
-            borderColor: '#ffffff',
-          },
+        root: {
+          color: '#ffffff',
         },
       },
     },
-
-    MuiInput: {
+    MuiTextField: {
       styleOverrides: {
-        underline: {
-          '&:before': {
-            borderBottomColor: '#ffffff',
+        root: {
+          '& .MuiInputBase-root': {
+            color: '#ffffff',
           },
-          '&:after': {
-            borderBottomColor: '#ffffff',
+          '& .MuiFormLabel-root': {
+            color: '#ffffff',
           },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#ffffff',
+          },
+          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#ffffff',
+          }
         },
       },
     },

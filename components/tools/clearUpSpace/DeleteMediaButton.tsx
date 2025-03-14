@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Item } from '@/utils/types';
 import { JellyseerContext, JellyfinContext } from '@/utils/contexts/contexts';
 
@@ -75,7 +75,7 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filte
   return (
     <>
       <Button variant="contained" color="error" onClick={handleClickOpen} disabled={filteredItems.length === 0}>
-        Delete Media
+        Delete Selected Media
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Confirm Deletion</DialogTitle>

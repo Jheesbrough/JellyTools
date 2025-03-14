@@ -6,8 +6,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { Item } from "@/utils/types";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
+  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.primary.contrastText,
 }));
 
 const ClearUpSpaceTable: React.FC<{ filteredItems: Item[], setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>> }> = ({ filteredItems, setWatchedItems }) => {

@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
   return (
     <AppBar position="static" id="navbar" style={{ backgroundColor: '#2b2c32' }}>
       <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1, margin: 0 }} color='white' fontWeight={'bold'}>
+        <Typography variant="h6" style={{ flexGrow: 1, margin: 0 }} fontWeight={'bold'}>
           JellyTools
         </Typography>
         <Typography fontSize={16} onClick={handleClick} style={{ cursor: 'pointer' }}>
