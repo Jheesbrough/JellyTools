@@ -58,6 +58,15 @@ const theme = createTheme({
         },
       },
     },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          '&:before': {
+            borderColor: '#ffffff',
+          },
+        },
+      },
+    },
   },
 });
 

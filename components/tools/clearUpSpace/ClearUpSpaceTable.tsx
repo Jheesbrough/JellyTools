@@ -16,7 +16,7 @@ const ClearUpSpaceTable: React.FC<{ filteredItems: Item[], setWatchedItems: Reac
   };
 
   return (
-    <TableContainer component={Paper} style={{ flex: 1, overflowY: 'auto', marginTop: '16px', paddingBottom: '16px' }}>
+    <TableContainer style={{ flex: 1, overflowY: 'auto', marginTop: '16px', paddingBottom: '16px' }}>
       <Table stickyHeader size='small'>
         <TableHead>
           <TableRow>

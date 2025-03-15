@@ -70,7 +70,7 @@ const SimpleLeaderboard: React.FC<SimpleLeaderboardProps> = ({ title, buttonText
         </Stack>
       </Stack>
 
-      {loading && <LinearProgress />}
+      {loading && <LinearProgress color='secondary' sx={{ marginTop: 2 }} />}
       <LeaderboardTable items={items} columns={columns} />
     </Box>
   );

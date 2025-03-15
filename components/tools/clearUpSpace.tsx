@@ -114,15 +114,24 @@ const ClearUpSpace: React.FC = () => {
     <Box style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       {showAPIKeyDialog && <CheckAPIKeys open={showAPIKeyDialog} handleClose={handleCloseAPIKeyDialog} />}
       {showSettingsDialog && <SettingsDialog open={showSettingsDialog} handleClose={handleCloseSettingsDialog} deleteMethod={deleteMethod} setDeleteMethod={setDeleteMethod} />}
-      <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center', position: 'relative' }}>
+      {/* Desktop view */}
+      <Stack spacing={2} direction="row" style={{ marginBottom: '16px', alignItems: 'center', position: 'relative' }} display={{ xs: 'none', md: 'flex' }}>
         <DesiredSpaceInput desiredSpace={desiredSpace} setDesiredSpace={setDesiredSpace} />
         <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
           Get items
         </Button>
         <div style={{ flex: 1 }} />
-        <Typography variant="body1">
-          {filteredItems.length} items selected for deletion, total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
-        </Typography>
+
+        <Stack direction="column" spacing={1}>
+          <Typography variant="body1">
+            {filteredItems.length} items selected for deletion.
+          </Typography>
+          <Typography variant="body1">
+            Total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
+          </Typography>
+        </Stack>
+        <div style={{ flex: 1 }} />
+
         <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
         <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
           <IconButton>
@@ -135,7 +144,39 @@ const ClearUpSpace: React.FC = () => {
           </IconButton>
         </Tooltip>
       </Stack>
-      {loading && <LinearProgress />}
+
+      {/* Mobile view */}
+      <Stack spacing={0.5} direction="column" style={{ marginBottom: '16px', alignItems: 'center', position: 'relative' }} display={{ sm: 'flex', md: 'none' }}>
+        <Typography variant="body1" sx={{ paddingBottom: 1 }}>
+          Clear up space by deleting media that is least interacted with.
+        </Typography>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <DesiredSpaceInput desiredSpace={desiredSpace} setDesiredSpace={setDesiredSpace} />
+          <Button variant="contained" color="secondary" onClick={handleButtonClick} disabled={loading}>
+            Get items
+          </Button>
+        </Stack>
+
+        <Stack direction="row" spacing={1}>
+          <Typography variant="body1">
+            {filteredItems.length} items selected.
+          </Typography>
+          <Typography variant="body1">
+            Total size: {HumanFileSize(filteredItems.reduce((acc, item) => acc + (item.size || 0), 0))}
+          </Typography>
+        </Stack>
+        <div style={{ flex: 1 }} />
+        <Stack direction="row" spacing={2}>
+          <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
+          <Tooltip title="Settings">
+            <IconButton onClick={handleOpenSettingsDialog}>
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Stack>
+
+      {loading && <LinearProgress color='secondary' />}
       <ClearUpSpaceTable filteredItems={filteredItems} setWatchedItems={setWatchedItems} />
     </Box>
   );
