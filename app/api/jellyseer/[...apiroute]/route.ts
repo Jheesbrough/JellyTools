@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { sendAxiosJellyRequest } from '@/utils/axiosUtil';
 import { APIresponse } from '@/utils/types';
 import { headers } from 'next/headers';
