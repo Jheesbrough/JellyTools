@@ -95,6 +95,7 @@ const ViewTools = () => {
         ref={el => { paperRefs.current[index] = el; }}
         style={{ height: 250, padding: 16, cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         onClick={() => handleOpen(tool.content, index)}
+        id={`tool-${tool.title.toLowerCase().replace(/\s+/g, '')}`}
       >
         <div>
           <Typography variant="h5" fontWeight={'bold'} sx={{ mb: 2 }}>{tool.title}</Typography>
