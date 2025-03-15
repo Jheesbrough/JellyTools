@@ -1,7 +1,9 @@
 # JellyTools
 
 <!-- Shields.io -->
-![GitHub](https://img.shields.io/github/license/jheesbrough/JellyTools) ![GitHub last commit](https://img.shields.io/github/last-commit/jheesbrough/JellyTools) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jheesbrough/JellyTools)
+![GitHub](https://img.shields.io/github/license/jheesbrough/JellyTools) ![GitHub last commit](https://img.shields.io/github/last-commit/jheesbrough/JellyTools) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jheesbrough/JellyTools) [![Website](https://img.shields.io/website?logo=jellyfin&url=https%3A%2F%2Fjellytools.j33.xyz&logoColor=pink)](https://jellytools.j33.xyz)
+
+**🚀 Deployed at:** [jellytools.j33.xyz](https://jellytools.j33.xyz).
 
 The JellyTools webapp is a collection of external tools to help manage your [Jellyfin](https://github.com/jellyfin/jellyfin) media server. It uses both the Jellyfin API and the Jellyseer API to fetch data and run various housekeeping tasks.
 
