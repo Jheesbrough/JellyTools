@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Paper, Modal, Typography, Fade, Chip } from '@mui/material';
 import Grid from "@mui/material/Grid2";
 import { tools } from './toolsList';
@@ -47,12 +47,14 @@ const ViewTools = () => {
     const paperElement = paperRefs.current[index];
     if (!paperElement) return;
     const rect = paperElement.getBoundingClientRect();
+
     const startStyle: ModalStyle = {
       top: rect.top,
       left: rect.left,
       width: rect.width,
       height: rect.height,
     };
+
     const endStyle: ModalStyle = {
       top: window.innerHeight * 0.1,
       left: window.innerWidth * 0.1,
@@ -70,20 +72,46 @@ const ViewTools = () => {
     animateModalSize(modalStyle, initialModalStyle, 300, () => setOpen(false));
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (open) {
+        const endStyle: ModalStyle = {
+          top: window.innerHeight * 0.1,
+          left: window.innerWidth * 0.1,
+          width: window.innerWidth * 0.8,
+          height: window.innerHeight * 0.8,
+        };
+        animateModalSize(modalStyle, endStyle, 300);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [open, modalStyle]);
+
   const squares = tools.map((tool, index) => (
     <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
       <Paper
         ref={el => { paperRefs.current[index] = el; }}
         style={{ height: 250, padding: 16, cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         onClick={() => handleOpen(tool.content, index)}
+        id={`tool-${tool.title.toLowerCase().replace(/\s+/g, '')}`}
       >
         <div>
-          <Typography variant="h6">{tool.title}</Typography>
+          <Typography variant="h5" fontWeight={'bold'} sx={{ mb: 2 }}>{tool.title}</Typography>
           <Typography variant="body1">{tool.description}</Typography>
         </div>
         <div>
           {tool.tags.map((tag, tagIndex) => (
-        <Chip color={"info"} key={tagIndex} label={tag} style={{ marginRight: 4, marginBottom: 4 }} />
+            <Chip
+              size={"small"}
+              variant='outlined'
+              color={"info"}
+              key={tagIndex}
+              label={tag}
+              style={{ marginRight: 4, marginBottom: 4, color: 'white' }}
+            />
+
           ))}
         </div>
       </Paper>
@@ -92,7 +120,7 @@ const ViewTools = () => {
 
   return (
     <>
-      <Grid container spacing={2} m={2}>
+      <Grid container spacing={3} m={2}>
         {squares}
       </Grid>
       <Modal open={open} onClose={handleClose} closeAfterTransition>

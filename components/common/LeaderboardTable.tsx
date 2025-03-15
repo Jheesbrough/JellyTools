@@ -10,7 +10,7 @@ interface LeaderboardTableProps {
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: theme.palette.secondary.main,
   color: theme.palette.primary.contrastText,
 }));
 
