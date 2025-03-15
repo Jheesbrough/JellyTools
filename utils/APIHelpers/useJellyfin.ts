@@ -1,8 +1,8 @@
 "use client";
-import createJellyfin from '@/utils/APIHelpers/jellyfin';
+import createJellyfin, { Jellyfin } from '@/utils/APIHelpers/jellyfin';
 import { useJellyAPI } from '@/utils/APIHelpers/useJellyAPI';
 
-export const useJellyfin = () => {
+export const useJellyfin = (): { instance: Jellyfin, config: any, setConfig: any, authenticationStatus: any } => {
   const { config, setConfig, instance, authenticationStatus } = useJellyAPI(createJellyfin, 'jellyfinEndpoint', 'jellyfinApiKey');
 
   return {

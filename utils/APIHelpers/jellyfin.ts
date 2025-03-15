@@ -2,13 +2,27 @@
 import { APIresponse } from '@/utils/types';
 import { sendAxiosJellyRequest } from '@/utils/axiosUtil';
 
+export interface Jellyfin {
+  getUsers: () => Promise<APIresponse>;
+  getWatchedMovies: (userId: string) => Promise<APIresponse>;
+  getWatchedSeriesAndEpisodes: (userId: string) => Promise<APIresponse>;
+  getSeriesAndEpisodes: () => Promise<APIresponse>;
+  getMovies: () => Promise<APIresponse>;
+  deleteItem: (jellyfinItemId: string) => Promise<void>;
+  deleteItems: (jellyfinItemIds: string[]) => Promise<void>;
+  getAllItems: () => Promise<APIresponse>;
+  getAllWatchedItems: (userId: string) => Promise<APIresponse>;
+  validate: () => Promise<APIresponse>;
+  testEndpoint: (baseURL: string, apiKey: string) => Promise<APIresponse>;
+}
+
 /**
  * Creates a Jellyfin instance to interact with Jellyfin API.
  * @param {string} baseURL - The base URL of the Jellyfin server.
  * @param {string} apiKey - The API key for authentication.
- * @returns {object} - An object with methods to interact with the Jellyfin API.
+ * @returns {Jellyfin} - An object with methods to interact with the Jellyfin API.
  */
-export default function createJellyfin(baseURL: string, apiKey: string) {
+export default function createJellyfin(baseURL: string, apiKey: string): Jellyfin {
   const TESTING_ENDPOINT = '/system/info';
 
   const testEndpoint = async (baseURL: string, apiKey: string): Promise<APIresponse> => {
@@ -18,7 +32,6 @@ export default function createJellyfin(baseURL: string, apiKey: string) {
     } catch (error) {
       return { success: false, error: 'Invalid URL' };
     }
-
 
     return sendAxiosJellyRequest(new URL(TESTING_ENDPOINT, baseURL), 'get', { Authorization: `Mediabrowser Token="${apiKey}"` });
   };

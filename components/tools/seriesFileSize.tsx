@@ -1,9 +1,9 @@
 import React from 'react';
 import SimpleLeaderboard from '@/components/common/SimpleLeaderboard';
 import { Item, ItemResponse } from '@/utils/types';
-import { JellyfinContext } from '@/utils/contexts/contexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 
-const fetchSeriesFileSizes = async (jellyfin: any): Promise<Item[]> => {
+const fetchSeriesFileSizes = async (jellyfin: ReturnType<typeof useJellyfin>): Promise<Item[]> => {
   const response = (await jellyfin.instance.getSeriesAndEpisodes()).data;
   const seriesMap: { [key: string]: Item } = {};
 
@@ -33,15 +33,13 @@ const fetchSeriesFileSizes = async (jellyfin: any): Promise<Item[]> => {
 };
 
 const SeriesFileSize: React.FC = () => {
-  const jellyfin = React.useContext(JellyfinContext);
-
   return (
     <SimpleLeaderboard
       title="Series File Sizes"
       buttonText="Get Series File Sizes"
       tooltipText="This will get the file sizes of all series in your jellyfin library. Series file sizes are the sum of all episodes in the series."
       columns={['Name', 'File Size']}
-      fetchData={() => fetchSeriesFileSizes(jellyfin)}
+      fetchData={(jellyfin) => fetchSeriesFileSizes(jellyfin)}
     />
   );
 };

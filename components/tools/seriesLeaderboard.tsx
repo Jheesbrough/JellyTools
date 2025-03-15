@@ -1,9 +1,9 @@
 import React from 'react';
 import SimpleLeaderboard from '@/components/common/SimpleLeaderboard';
 import { Item, ItemResponse } from '@/utils/types';
-import { JellyfinContext } from '@/utils/contexts/contexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 
-const fetchSeriesViews = async (jellyfin: any, sortMethod: string): Promise<Item[]> => {
+const fetchSeriesViews = async (jellyfin: ReturnType<typeof useJellyfin>, sortMethod: string): Promise<Item[]> => {
   const users = (await jellyfin.instance.getUsers()).data;
   const seriesMap: { [key: string]: Item } = {};
 
@@ -29,15 +29,13 @@ const fetchSeriesViews = async (jellyfin: any, sortMethod: string): Promise<Item
 };
 
 const SeriesLeaderboard: React.FC = () => {
-  const jellyfin = React.useContext(JellyfinContext);
-
   return (
     <SimpleLeaderboard
       title="Series Leaderboard"
       buttonText="Get Series Leaderboard"
       tooltipText="This leaderboard shows the total number of views for each series, counted as 1 view per episode. So an episode watched by 3 users would count as 3 views for the series."
       columns={['Name', 'Total Views']}
-      fetchData={(sortMethod) => fetchSeriesViews(jellyfin, sortMethod)}
+      fetchData={(jellyfin, sortMethod) => fetchSeriesViews(jellyfin, sortMethod)}
       showSortMethodSelector={true}
     />
   );

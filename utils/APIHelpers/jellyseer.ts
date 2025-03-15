@@ -2,6 +2,14 @@
 import axios from 'axios';
 import { APIresponse } from '@/utils/types';
 
+export interface Jellyseer {
+  testEndpoint: (baseURL: string, apiKey: string) => Promise<APIresponse>;
+  getMedia: () => Promise<any>;
+  validate: () => Promise<APIresponse>;
+  deleteItems: (jellyfinItemIds: string[]) => Promise<void>;
+}
+
+
 /**
  * Creates a Jellyseer instance to interact with Jellyseer API.
  * @param {string} baseURL - The base URL for the API.
