@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 import { Button, Stack, Typography, LinearProgress, Box, Tooltip, IconButton } from '@mui/material';
 import ClearUpSpaceTable from './clearUpSpace/ClearUpSpaceTable';
 import DesiredSpaceInput from './clearUpSpace/DesiredSpaceInput';
@@ -132,7 +131,7 @@ const ClearUpSpace: React.FC = () => {
         </Stack>
         <div style={{ flex: 1 }} />
 
-        <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
+        <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
         <Tooltip title="This tool will help you to clear up space by deleting the least watched items (based on the number of views, the size of the item, when the item was last played, and when it was created).">
           <IconButton>
             <HelpIcon />
@@ -167,7 +166,7 @@ const ClearUpSpace: React.FC = () => {
         </Stack>
         <div style={{ flex: 1 }} />
         <Stack direction="row" spacing={2}>
-          <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} setWatchedItems={setWatchedItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
+          <DeleteMediaButton clearItems={clearItems} filteredItems={filteredItems} deleteMethod={deleteMethod} setShowAPIKeyDialog={setShowAPIKeyDialog} />
           <Tooltip title="Settings">
             <IconButton onClick={handleOpenSettingsDialog}>
               <SettingsIcon />

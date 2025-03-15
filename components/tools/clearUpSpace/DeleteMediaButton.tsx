@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { JellyfinContext, JellyseerContext } from '@/utils/contexts/contexts';
 import { Item } from '@/utils/types';
-import { JellyseerContext, JellyfinContext } from '@/utils/contexts/contexts';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface DeleteMediaButtonProps {
   clearItems: () => void;
   filteredItems: Item[];
-  setWatchedItems: React.Dispatch<React.SetStateAction<Item[]>>;
   deleteMethod: 'jellyfin' | 'jellyseer';
   setShowAPIKeyDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filteredItems, setWatchedItems, deleteMethod, setShowAPIKeyDialog }) => {
+const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filteredItems, deleteMethod, setShowAPIKeyDialog }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [cooldown, setCooldown] = useState(5);
@@ -19,22 +18,28 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filte
   const jellyseer = useContext(JellyseerContext);
   const jellyfin = useContext(JellyfinContext);
 
-  if (!jellyfin || !jellyseer) return null;
-
   useEffect(() => {
     if (!open) return;
 
-    if (deleteMethod === 'jellyfin' && jellyfin.authenticationStatus !== 'true') {
-      setShowAPIKeyDialog(true);
-      setOpen(false);
-
-    }
-
-    if (deleteMethod === 'jellyseer' && jellyseer.authenticationStatus !== 'true') {
+    if (deleteMethod === 'jellyfin' && jellyfin?.authenticationStatus !== 'true') {
       setShowAPIKeyDialog(true);
       setOpen(false);
     }
-  }, [open]);
+
+    if (deleteMethod === 'jellyseer' && jellyseer?.authenticationStatus !== 'true') {
+      setShowAPIKeyDialog(true);
+      setOpen(false);
+    }
+  }, [open, deleteMethod, jellyfin?.authenticationStatus, jellyseer?.authenticationStatus, setShowAPIKeyDialog]);
+
+  useEffect(() => {
+    if (confirmOpen && cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [confirmOpen, cooldown]);
+
+  if (!jellyfin || !jellyseer) return null;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -64,13 +69,6 @@ const DeleteMediaButton: React.FC<DeleteMediaButtonProps> = ({ clearItems, filte
     setConfirmOpen(false);
     setOpen(false);
   };
-
-  useEffect(() => {
-    if (confirmOpen && cooldown > 0) {
-      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [confirmOpen, cooldown]);
 
   return (
     <>

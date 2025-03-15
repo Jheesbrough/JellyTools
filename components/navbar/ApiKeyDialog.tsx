@@ -12,6 +12,8 @@ import {
   Typography
 } from '@mui/material';
 import React, { useContext, useState, useEffect } from 'react';
+import { Jellyfin } from '@/utils/APIHelpers/jellyfin';
+import { Jellyseer } from '@/utils/APIHelpers/jellyseer';
 
 interface ApiKeyDialogProps {
   isDialogOpen: boolean;
@@ -51,7 +53,7 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
     setLoading(true);
     let result: { success: boolean; message?: string } | null = null;
 
-    const authenticate = async (instance: any, instanceName: string) => {
+    const authenticate = async (instance: Jellyfin | Jellyseer | undefined, instanceName: string) => {
       if (!instance) {
         return { success: false, message: `Failed to authenticate with ${instanceName}. No ${instanceName} instance found.` };
       }
@@ -86,7 +88,7 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({
       if (currentApp === 'jellyfin') {
         jellyfin?.setConfig({ baseURL: endpoint, apiKey });
       }
-      ``
+
       if (currentApp === 'jellyseer') {
         jellyseer?.setConfig({ baseURL: endpoint, apiKey });
       }

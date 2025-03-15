@@ -1,9 +1,9 @@
 import React from 'react';
 import SimpleLeaderboard from '@/components/common/SimpleLeaderboard';
 import { Item, ItemResponse } from '@/utils/types';
-import { JellyfinContext } from '@/utils/contexts/contexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 
-const fetchMovieFileSizes = async (jellyfin: any): Promise<Item[]> => {
+const fetchMovieFileSizes = async (jellyfin: ReturnType<typeof useJellyfin>): Promise<Item[]> => {
   const response = (await jellyfin.instance.getMovies()).data;
   return response.Items
     .map((item: ItemResponse) => ({
@@ -15,15 +15,13 @@ const fetchMovieFileSizes = async (jellyfin: any): Promise<Item[]> => {
 };
 
 const MovieFileSize: React.FC = () => {
-  const jellyfin = React.useContext(JellyfinContext);
-
   return (
     <SimpleLeaderboard
       title="Movie File Sizes"
       buttonText="Get Movie File Sizes"
       tooltipText="This will get the file sizes of all movies in your jellyfin library."
       columns={['Name', 'File Size']}
-      fetchData={() => fetchMovieFileSizes(jellyfin)}
+      fetchData={(jellyfin) => fetchMovieFileSizes(jellyfin)}
     />
   );
 };

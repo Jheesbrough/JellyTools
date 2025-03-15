@@ -1,8 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
-import { APIresponse } from '@/utils/types';
 import { sendAxiosJellyRequest } from '@/utils/axiosUtil';
+import type { NextApiRequest } from 'next';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 async function getBaseURLAndApiKey(request: NextApiRequest) {
   if (!request.url) { throw new Error('Invalid request URL'); }

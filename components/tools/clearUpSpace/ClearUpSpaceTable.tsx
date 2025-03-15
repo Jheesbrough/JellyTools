@@ -1,9 +1,9 @@
-import React from 'react';
-import { Paper, Table, TableHead, TableBody, TableRow, TableCell, TableContainer, IconButton, styled } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import humanFileSize from '@/utils/humanFileSize';
-import { formatDistanceToNow } from 'date-fns';
 import { Item } from "@/utils/types";
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { formatDistanceToNow } from 'date-fns';
+import React from 'react';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,

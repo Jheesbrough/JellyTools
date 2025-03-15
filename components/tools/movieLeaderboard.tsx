@@ -1,9 +1,9 @@
 import React from 'react';
 import SimpleLeaderboard from '@/components/common/SimpleLeaderboard';
 import { Item, ItemResponse } from '@/utils/types';
-import { JellyfinContext } from '@/utils/contexts/contexts';
+import { useJellyfin } from '@/utils/APIHelpers/useJellyfin';
 
-const fetchWatchedMovies = async (jellyfin: any, sortMethod: string): Promise<Item[]> => {
+const fetchWatchedMovies = async (jellyfin: ReturnType<typeof useJellyfin>, sortMethod: string): Promise<Item[]> => {
   const users = (await jellyfin.instance.getUsers()).data;
   const movieCount: { [key: string]: number } = {};
 
@@ -33,7 +33,6 @@ const fetchWatchedMovies = async (jellyfin: any, sortMethod: string): Promise<It
 };
 
 const MovieLeaderboard: React.FC = () => {
-  const jellyfin = React.useContext(JellyfinContext);
 
   return (
     <SimpleLeaderboard
@@ -41,7 +40,7 @@ const MovieLeaderboard: React.FC = () => {
       buttonText="View Leaderboard"
       tooltipText="This application allows you to view a leaderboard of movies based on the number of times they have been watched. You can sort the leaderboard by tag or by count."
       columns={['Name', 'Total Views']}
-      fetchData={(sortMethod) => fetchWatchedMovies(jellyfin, sortMethod)}
+      fetchData={(jellyfin, sortMethod) => fetchWatchedMovies(jellyfin, sortMethod)}
       showSortMethodSelector={true}
     />
   );
